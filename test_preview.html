@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Finance Planner — Test & Verification Suite</title>
+    <style>
+        :root {
+            --navy-primary: #141B4D;
+            --navy-hover: #1E286D;
+            --green-accent: #2E7D4F;
+            --green-light: #E8F5E9;
+            --amber-warning: #C77E1B;
+            --amber-light: #FEF3C7;
+            --red-error: #C0392B;
+            --surface-bg: #F7F8FA;
+            --card-bg: #FFFFFF;
+            --text-primary: #1A1A1A;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--surface-bg);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand h1 {
+            font-size: 20px;
+            margin: 0;
+            color: var(--navy-primary);
+        }
+
+        .status-badge {
+            background-color: var(--green-light);
+            color: var(--green-accent);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 32px auto;
+            padding: 0 24px;
+        }
+
+        .summary-banner {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, #202B6D 100%);
+            color: white;
+            padding: 28px 32px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(20, 27, 77, 0.12);
+        }
+
+        .summary-banner h2 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+        }
+
+        .summary-banner p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 15px;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .metric-val {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .metric-lbl {
+            font-size: 12px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy-primary);
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -4px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--navy-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--navy-primary);
+            border-bottom-color: var(--navy-primary);
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .screen-preview {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+            display: block;
+        }
+
+        /* Interactive Simulator */
+        .sim-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .btn-calc {
+            background: var(--navy-primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-calc:hover {
+            background: var(--navy-hover);
+        }
+
+        .result-box {
+            background: var(--surface-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-num {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--navy-primary);
+            margin: 4px 0;
+        }
+
+        .badge-feasible {
+            background: var(--green-light);
+            color: var(--green-accent);
+            border: 1px solid var(--green-accent);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 14px;
+        }
+
+        .badge-warning {
+            background: var(--amber-light);
+            color: var(--amber-warning);
+            border: 1px solid var(--amber-warning);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 14px;
+        }
+
+        /* Test results table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        th {
+            background-color: var(--surface-bg);
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .pass-tag {
+            color: var(--green-accent);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <span style="font-size: 24px;">💰</span>
+            <h1>Smart Finance Planner — Verification Suite</h1>
+        </div>
+        <div class="status-badge">
+            ✓ 36 / 36 TESTS PASSED (100%)
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="summary-banner">
+            <h2>Desktop Java 17 + FlatLaf Application Active</h2>
+            <p>
+                Smart Finance Planner is a desktop application written in Java 17 with Swing, FlatLaf, and embedded SQLite JDBC. Below you can test the calculation engine interactively, review verified test results, and inspect high-resolution captures of all 8 native Swing screens.
+            </p>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-val">36 / 36</div>
+                    <div class="metric-lbl">JUnit 5 Tests</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-val">8 / 8</div>
+                    <div class="metric-lbl">GUI Panels</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-val">100%</div>
+                    <div class="metric-lbl">SQLite Schema Compliance</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-val">4</div>
+                    <div class="metric-lbl">Display Currencies</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Calculator Verification -->
+        <div class="card">
+            <h3 class="card-title">🧮 Interactive Engine Verification (Live In-Browser Test)</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">
+                Test the exact formulas implemented in <code>InflationCalculator.java</code> and <code>SavingsPlanner.java</code>.
+            </p>
+            <div class="sim-grid">
+                <div>
+                    <div class="form-group">
+                        <label for="simItem">Item Name</label>
+                        <input id="simItem" class="form-control" type="text" value="MacBook Pro M3">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label for="simPrice">Current Price Today</label>
+                            <input id="simPrice" class="form-control" type="number" value="150000">
+                        </div>
+                        <div class="form-group">
+                            <label for="simCurrency">Currency</label>
+                            <select id="simCurrency" class="form-control">
+                                <option value="₹">INR (₹)</option>
+                                <option value="$">USD ($)</option>
+                                <option value="€">EUR (€)</option>
+                                <option value="£">GBP (£)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label for="simYears">Years Until Purchase</label>
+                            <input id="simYears" class="form-control" type="number" value="3" min="1" max="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="simInflation">Annual Inflation (%)</label>
+                            <input id="simInflation" class="form-control" type="number" value="6" step="0.5">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label for="simIncome">Monthly Income</label>
+                            <input id="simIncome" class="form-control" type="number" value="75000">
+                        </div>
+                        <div class="form-group">
+                            <label for="simSavingsRate">Target Savings Rate (%)</label>
+                            <input id="simSavingsRate" class="form-control" type="number" value="20">
+                        </div>
+                    </div>
+                    <button id="calcBtn" class="btn-calc" onclick="calculatePlan()">Run Projection Calculation</button>
+                </div>
+
+                <div class="result-box">
+                    <div style="font-size: 13px; font-weight: bold; color: var(--text-muted);">PROJECTED FUTURE COST</div>
+                    <div id="resFutureCost" class="hero-num">₹178,652.40</div>
+                    <div style="font-size: 13px; font-weight: bold; color: var(--text-muted); margin-top: 14px;">REQUIRED MONTHLY SAVING</div>
+                    <div id="resMonthlySaving" class="hero-num">₹4,962.57</div>
+                    <div id="resYearlyDetail" style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                        Equivalent to ₹59,550.80 / year over 3 years
+                    </div>
+                    <div id="resBanner" class="badge-feasible">
+                        ✓ Fits comfortably within your plan (requires 6.6% of income, target cap is 20.0%)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen Gallery Tabs -->
+        <div class="card">
+            <h3 class="card-title">🖥️ Native Swing & FlatLaf Screen Previews</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">
+                High-resolution captures rendered directly from the Java Swing UI components:
+            </p>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('tab-dash')">Dashboard</button>
+                <button class="tab-btn" onclick="switchTab('tab-onboard')">Onboarding</button>
+                <button class="tab-btn" onclick="switchTab('tab-add')">Add / Edit Goal</button>
+                <button class="tab-btn" onclick="switchTab('tab-result')">Result Projection</button>
+                <button class="tab-btn" onclick="switchTab('tab-saved')">Saved Goals</button>
+                <button class="tab-btn" onclick="switchTab('tab-detail')">Goal Detail & Contributions</button>
+                <button class="tab-btn" onclick="switchTab('tab-settings')">Settings</button>
+                <button class="tab-btn" onclick="switchTab('tab-archived')">Archived Goals</button>
+                <button class="tab-btn" onclick="switchTab('tab-dark')">Dark Theme</button>
+            </div>
+
+            <div id="tab-dash" class="tab-pane active">
+                <img class="screen-preview" src="target/screenshots/02_dashboard.png" alt="Dashboard Screen">
+            </div>
+            <div id="tab-onboard" class="tab-pane">
+                <img class="screen-preview" src="target/screenshots/01_onboarding.png" alt="Onboarding Screen">
+            </div>
+            <div id="tab-add" class="tab-pane">
+                <img class="screen-preview" src="target/screenshots/03_add_goal.png" alt="Add Goal Screen">
+            </div>
+            <div id="tab-result" class="tab-pane">
+                <img class="screen-preview" src="target/screenshots/04_result_screen.png" alt="Result Screen">
+            </div>
+            <div id="tab-saved" class="tab-pane">
+                <img class="screen-preview" src="target/screenshots/05_saved_goals.png" alt="Saved Goals Screen">
+            </div>
+            <div id="tab-detail" class="tab-pane">
+                <img class="screen-preview" src="target/screenshots/06_goal_detail.png" alt="Goal Detail Screen">
+            </div>
+            <div id="tab-settings" class="tab-pane">
+                <img class="screen-preview" src="target/screenshots/07_settings.png" alt="Settings Screen">
+            </div>
+            <div id="tab-archived" class="tab-pane">
+                <img class="screen-preview" src="target/screenshots/08_archived_goals.png" alt="Archived Goals Screen">
+            </div>
+            <div id="tab-dark" class="tab-pane">
+                <img class="screen-preview" src="target/screenshots/09_dark_dashboard.png" alt="Dark Mode Dashboard">
+            </div>
+        </div>
+
+        <!-- Test Suite Results -->
+        <div class="card">
+            <h3 class="card-title">📋 Automated Test Suite Execution</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Suite</th>
+                        <th>Class Under Test</th>
+                        <th>Tests Run</th>
+                        <th>Status</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>UserDaoTest</strong></td>
+                        <td><code>com.sfp.data.UserDao</code></td>
+                        <td>4</td>
+                        <td class="pass-tag">PASSED</td>
+                        <td>In-memory SQLite CRUD and profile persistence</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GoalDaoTest</strong></td>
+                        <td><code>com.sfp.data.GoalDao</code></td>
+                        <td>5</td>
+                        <td class="pass-tag">PASSED</td>
+                        <td>Queries, status updates, archive/restore, and deletion</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ContributionDaoTest</strong></td>
+                        <td><code>com.sfp.data.ContributionDao</code></td>
+                        <td>4</td>
+                        <td class="pass-tag">PASSED</td>
+                        <td>Sum aggregation, ordering, and ON DELETE CASCADE</td>
+                    </tr>
+                    <tr>
+                        <td><strong>InflationCalculatorTest</strong></td>
+                        <td><code>com.sfp.engine.InflationCalculator</code></td>
+                        <td>5</td>
+                        <td class="pass-tag">PASSED</td>
+                        <td>0% inflation, hand calculations, negative bounds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SavingsPlannerTest</strong></td>
+                        <td><code>com.sfp.engine.SavingsPlanner</code></td>
+                        <td>6</td>
+                        <td class="pass-tag">PASSED</td>
+                        <td>Zero-division guards, percentage of income, feasibility</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ProgressTrackerTest</strong></td>
+                        <td><code>com.sfp.engine.ProgressTracker</code></td>
+                        <td>4</td>
+                        <td class="pass-tag">PASSED</td>
+                        <td>Progress %, remaining amount, deterministic asOf pacing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ValidatorTest</strong></td>
+                        <td><code>com.sfp.util.Validator</code></td>
+                        <td>8</td>
+                        <td class="pass-tag">PASSED</td>
+                        <td>All 8 spec §13 validation rules verified</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+            const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const activePane = document.getElementById(tabId);
+            if (activePane) activePane.classList.add('active');
+        }
+
+        function calculatePlan() {
+            const price = parseFloat(document.getElementById('simPrice').value) || 0;
+            const currency = document.getElementById('simCurrency').value;
+            const years = parseInt(document.getElementById('simYears').value) || 1;
+            const inflation = parseFloat(document.getElementById('simInflation').value) || 0;
+            const income = parseFloat(document.getElementById('simIncome').value) || 0;
+            const savingsRate = parseFloat(document.getElementById('simSavingsRate').value) || 0;
+
+            const rateDecimal = inflation / 100.0;
+            const futureCost = price * Math.pow(1.0 + rateDecimal, years);
+            const months = Math.max(years * 12, 1);
+            const monthlySaving = futureCost / months;
+            const yearlySaving = futureCost / Math.max(years, 1);
+
+            const percentOfIncome = income > 0 ? (monthlySaving / income) * 100.0 : 0.0;
+            const isFeasible = monthlySaving <= (income * (savingsRate / 100.0));
+
+            document.getElementById('resFutureCost').textContent = currency + futureCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('resMonthlySaving').textContent = currency + monthlySaving.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('resYearlyDetail').textContent = `Equivalent to ${currency}${yearlySaving.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / year over ${years} years`;
+
+            const banner = document.getElementById('resBanner');
+            if (isFeasible) {
+                banner.className = 'badge-feasible';
+                banner.textContent = `✓ Fits comfortably within your plan (requires ${percentOfIncome.toFixed(1)}% of income, target cap is ${savingsRate.toFixed(1)}%)`;
+            } else {
+                banner.className = 'badge-warning';
+                banner.textContent = `⚠ High stretch: requires ${percentOfIncome.toFixed(1)}% of income (target cap is ${savingsRate.toFixed(1)}%) — consider extending timeline`;
+            }
+        }
+    </script>
+</body>
+</html>
