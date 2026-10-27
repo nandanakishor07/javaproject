@@ -84,7 +84,6 @@ public class ResultPanel extends JPanel {
 
         // Feasibility Banner
         feasibilityBanner = new JPanel(new BorderLayout());
-        feasibilityBanner.setMaximumSize(new Dimension(580, Integer.MAX_VALUE));
         feasibilityLabel = new JLabel("", SwingConstants.CENTER);
         feasibilityLabel.setFont(AppTheme.FONT_BODY_BOLD);
         feasibilityBanner.add(feasibilityLabel, BorderLayout.CENTER);
@@ -159,19 +158,27 @@ public class ResultPanel extends JPanel {
             feasibilityBanner.setBackground(AppTheme.GREEN_LIGHT);
             feasibilityBanner.setBorder(new CompoundBorder(
                 new LineBorder(AppTheme.GREEN_ACCENT, 1, true),
-                new EmptyBorder(10, 16, 10, 16)
+                new EmptyBorder(12, 12, 12, 12)
             ));
-            feasibilityLabel.setForeground(AppTheme.GREEN_ACCENT);
             setFeasibilityMessage(String.format(
                     "Achievable: needs %.1f%% of your income, within your %.1f%% limit.",
                     percentOfIncome, targetSavingsPercent), AppTheme.GREEN_ACCENT);
+        } else if (percentOfIncome > 100.0) {
+            feasibilityBanner.setBackground(AppTheme.AMBER_LIGHT);
+            feasibilityBanner.setBorder(new CompoundBorder(
+                new LineBorder(AppTheme.AMBER_WARNING, 1, true),
+                new EmptyBorder(12, 12, 12, 12)
+            ));
+            setFeasibilityMessage(
+                    "This goal needs more than your whole monthly income. Extend the target year, "
+                            + "lower the price, or increase your income.",
+                    AppTheme.AMBER_WARNING);
         } else {
             feasibilityBanner.setBackground(AppTheme.AMBER_LIGHT);
             feasibilityBanner.setBorder(new CompoundBorder(
                 new LineBorder(AppTheme.AMBER_WARNING, 1, true),
-                new EmptyBorder(10, 16, 10, 16)
+                new EmptyBorder(12, 12, 12, 12)
             ));
-            feasibilityLabel.setForeground(AppTheme.AMBER_WARNING);
             setFeasibilityMessage(String.format(
                     "Needs %.1f%% of your income, above your %.1f%% limit. "
                             + "Raise your savings rate to at least %.1f%%, or extend the target year.",
@@ -185,6 +192,8 @@ public class ResultPanel extends JPanel {
         String htmlColor = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
         feasibilityLabel.setText("<html><div style='width:420px; text-align:center; color:"
                 + htmlColor + ";'>" + message + "</div></html>");
+        Dimension preferredSize = feasibilityBanner.getPreferredSize();
+        feasibilityBanner.setMaximumSize(new Dimension(580, preferredSize.height));
     }
 
     /**

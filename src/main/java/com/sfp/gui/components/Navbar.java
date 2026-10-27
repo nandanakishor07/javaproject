@@ -59,7 +59,7 @@ public class Navbar extends JPanel {
         addNavLink(linksPanel, "Settings", "SETTINGS");
 
         // Theme Toggle Button
-        themeToggleBtn = AppTheme.createSecondaryButton(AppTheme.isDarkMode() ? "☀ Light" : "🌙 Dark");
+        themeToggleBtn = AppTheme.createSecondaryButton(AppTheme.isDarkMode() ? "Light" : "Dark");
         themeToggleBtn.addActionListener(e -> {
             if (onThemeToggle != null) {
                 onThemeToggle.run();
@@ -113,7 +113,7 @@ public class Navbar extends JPanel {
      * Updates the theme toggle button label.
      */
     public void updateThemeToggleText() {
-        themeToggleBtn.setText(AppTheme.isDarkMode() ? "☀ Light" : "🌙 Dark");
+        themeToggleBtn.setText(AppTheme.isDarkMode() ? "Light" : "Dark");
         setBackground(AppTheme.isDarkMode() ? AppTheme.CARD_BG_DARK : Color.WHITE);
         repaint();
     }
