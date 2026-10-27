@@ -54,7 +54,7 @@ public class DashboardPanel extends JPanel {
 
         greetingLabel = new JLabel("Welcome back!");
         greetingLabel.setFont(AppTheme.FONT_TITLE);
-        greetingLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        greetingLabel.setForeground(AppTheme.getHeadingColor());
 
         JButton addGoalBtn = AppTheme.createPrimaryButton("+ Add New Goal");
         addGoalBtn.addActionListener(e -> mainFrame.showAddGoalForm());

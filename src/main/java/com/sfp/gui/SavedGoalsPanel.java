@@ -57,7 +57,7 @@ public class SavedGoalsPanel extends JPanel {
 
         JLabel titleLabel = new JLabel("Saved Financial Goals");
         titleLabel.setFont(AppTheme.FONT_TITLE);
-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        titleLabel.setForeground(AppTheme.getHeadingColor());
 
         JButton addBtn = AppTheme.createPrimaryButton("+ Add New Goal");
         addBtn.addActionListener(e -> mainFrame.showAddGoalForm());

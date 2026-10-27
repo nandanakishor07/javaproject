@@ -40,7 +40,7 @@ public class ArchivedGoalsPanel extends JPanel {
 
         JLabel titleLabel = new JLabel("Archived Goals");
         titleLabel.setFont(AppTheme.FONT_TITLE);
-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        titleLabel.setForeground(AppTheme.getHeadingColor());
 
         JLabel subtitle = new JLabel("Goals moved here are hidden from the active dashboard. You can restore or permanently delete them.");
         subtitle.setFont(AppTheme.FONT_BODY);

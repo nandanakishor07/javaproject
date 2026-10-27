@@ -45,7 +45,7 @@ public class OnboardingPanel extends JPanel {
 
         JLabel titleLabel = new JLabel("Welcome to Smart Finance");
         titleLabel.setFont(AppTheme.FONT_TITLE);
-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        titleLabel.setForeground(AppTheme.getHeadingColor());
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel subtitleLabel = new JLabel("Set up your financial profile to start planning goals.");

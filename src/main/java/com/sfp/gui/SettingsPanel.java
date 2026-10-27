@@ -47,7 +47,7 @@ public class SettingsPanel extends JPanel {
 
         JLabel titleLabel = new JLabel("Application Preferences & Profile");
         titleLabel.setFont(AppTheme.FONT_TITLE);
-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        titleLabel.setForeground(AppTheme.getHeadingColor());
 
         JLabel subtitle = new JLabel("Adjust your financial baseline and default currency preferences.");
         subtitle.setFont(AppTheme.FONT_BODY);
@@ -164,6 +164,7 @@ public class SettingsPanel extends JPanel {
                 mainFrame.onUserUpdated(user);
                 JOptionPane.showMessageDialog(this, "Preferences saved successfully!", "Saved", JOptionPane.INFORMATION_MESSAGE);
                 mainFrame.navigateTo("DASHBOARD");
+                mainFrame.rebuildUi();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Failed to update settings: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
             }

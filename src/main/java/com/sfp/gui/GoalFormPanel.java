@@ -65,7 +65,7 @@ public class GoalFormPanel extends JPanel {
 
         headerTitle = new JLabel("Plan a New Purchase Goal");
         headerTitle.setFont(AppTheme.FONT_TITLE);
-        headerTitle.setForeground(AppTheme.NAVY_PRIMARY);
+        headerTitle.setForeground(AppTheme.getHeadingColor());
         headerTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel subtitle = new JLabel("Enter your target item details to calculate inflation and savings targets.");

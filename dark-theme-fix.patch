@@ -1,0 +1,370 @@
+diff --git a/src/main/java/com/sfp/gui/ArchivedGoalsPanel.java b/src/main/java/com/sfp/gui/ArchivedGoalsPanel.java
+index 8bcb364..2f75f3b 100644
+--- a/src/main/java/com/sfp/gui/ArchivedGoalsPanel.java
++++ b/src/main/java/com/sfp/gui/ArchivedGoalsPanel.java
+@@ -40,7 +40,7 @@ public class ArchivedGoalsPanel extends JPanel {
+ 
+         JLabel titleLabel = new JLabel("Archived Goals");
+         titleLabel.setFont(AppTheme.FONT_TITLE);
+-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        titleLabel.setForeground(AppTheme.getHeadingColor());
+ 
+         JLabel subtitle = new JLabel("Goals moved here are hidden from the active dashboard. You can restore or permanently delete them.");
+         subtitle.setFont(AppTheme.FONT_BODY);
+diff --git a/src/main/java/com/sfp/gui/DashboardPanel.java b/src/main/java/com/sfp/gui/DashboardPanel.java
+index ce323d6..21417f5 100644
+--- a/src/main/java/com/sfp/gui/DashboardPanel.java
++++ b/src/main/java/com/sfp/gui/DashboardPanel.java
+@@ -54,7 +54,7 @@ public class DashboardPanel extends JPanel {
+ 
+         greetingLabel = new JLabel("Welcome back!");
+         greetingLabel.setFont(AppTheme.FONT_TITLE);
+-        greetingLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        greetingLabel.setForeground(AppTheme.getHeadingColor());
+ 
+         JButton addGoalBtn = AppTheme.createPrimaryButton("+ Add New Goal");
+         addGoalBtn.addActionListener(e -> mainFrame.showAddGoalForm());
+diff --git a/src/main/java/com/sfp/gui/GoalDetailPanel.java b/src/main/java/com/sfp/gui/GoalDetailPanel.java
+index fcdd226..4016121 100644
+--- a/src/main/java/com/sfp/gui/GoalDetailPanel.java
++++ b/src/main/java/com/sfp/gui/GoalDetailPanel.java
+@@ -100,7 +100,7 @@ public class GoalDetailPanel extends JPanel {
+ 
+         titleLabel = new JLabel("Goal Details");
+         titleLabel.setFont(AppTheme.FONT_TITLE);
+-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        titleLabel.setForeground(AppTheme.getHeadingColor());
+ 
+         onTrackBadge = new JLabel(" ✓ ON TRACK ");
+         onTrackBadge.setFont(AppTheme.FONT_SMALL_BOLD);
+@@ -126,7 +126,7 @@ public class GoalDetailPanel extends JPanel {
+ 
+         remainingAmountLabel = new JLabel("Remaining: ₹0.00");
+         remainingAmountLabel.setFont(AppTheme.FONT_BODY_BOLD);
+-        remainingAmountLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        remainingAmountLabel.setForeground(AppTheme.getHeadingColor());
+ 
+         numbersRow.add(progressSummaryLabel, BorderLayout.WEST);
+         numbersRow.add(remainingAmountLabel, BorderLayout.EAST);
+@@ -158,7 +158,7 @@ public class GoalDetailPanel extends JPanel {
+ 
+         JLabel historyTitle = new JLabel("Contribution History");
+         historyTitle.setFont(AppTheme.FONT_SECTION);
+-        historyTitle.setForeground(AppTheme.NAVY_PRIMARY);
++        historyTitle.setForeground(AppTheme.getHeadingColor());
+ 
+         JButton deleteEntryBtn = AppTheme.createSecondaryButton("Delete Selected Entry");
+         deleteEntryBtn.addActionListener(e -> handleDeleteSelectedContribution());
+diff --git a/src/main/java/com/sfp/gui/GoalFormPanel.java b/src/main/java/com/sfp/gui/GoalFormPanel.java
+index 3481f1d..eda52f7 100644
+--- a/src/main/java/com/sfp/gui/GoalFormPanel.java
++++ b/src/main/java/com/sfp/gui/GoalFormPanel.java
+@@ -65,7 +65,7 @@ public class GoalFormPanel extends JPanel {
+ 
+         headerTitle = new JLabel("Plan a New Purchase Goal");
+         headerTitle.setFont(AppTheme.FONT_TITLE);
+-        headerTitle.setForeground(AppTheme.NAVY_PRIMARY);
++        headerTitle.setForeground(AppTheme.getHeadingColor());
+         headerTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+ 
+         JLabel subtitle = new JLabel("Enter your target item details to calculate inflation and savings targets.");
+diff --git a/src/main/java/com/sfp/gui/MainFrame.java b/src/main/java/com/sfp/gui/MainFrame.java
+index 8993fd6..d9bf6cf 100644
+--- a/src/main/java/com/sfp/gui/MainFrame.java
++++ b/src/main/java/com/sfp/gui/MainFrame.java
+@@ -50,11 +50,22 @@ public class MainFrame extends JFrame {
+      * Constructs MainFrame and initializes all panels, DAOs, and database dependencies.
+      */
+     public MainFrame() {
++        this(null, null);
++    }
++
++    /**
++     * Constructs MainFrame, optionally restoring a previous window position and screen
++     * (used when the UI is rebuilt after a theme change).
++     */
++    public MainFrame(Rectangle previousBounds, String startScreen) {
+         setTitle("Smart Finance Planner");
+         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         setSize(1100, 740);
+         setMinimumSize(new Dimension(960, 600));
+         setLocationRelativeTo(null);
++        if (previousBounds != null) {
++            setBounds(previousBounds);
++        }
+ 
+         // Core singletons
+         dbManager = new DatabaseManager();
+@@ -79,6 +90,11 @@ public class MainFrame extends JFrame {
+             currentUser = null;
+         }
+ 
++        // Apply the saved theme first so every panel is built with the right colours
++        if (currentUser != null) {
++            AppTheme.initTheme(currentUser.getTheme());
++        }
++
+         // Setup CardLayout
+         cardLayout = new CardLayout();
+         cardsPanel = new JPanel(cardLayout);
+@@ -113,12 +129,26 @@ public class MainFrame extends JFrame {
+             navbar.setVisible(false);
+             navigateTo("ONBOARDING");
+         } else {
+-            AppTheme.initTheme(currentUser.getTheme());
+             navbar.setVisible(true);
+-            navigateTo("DASHBOARD");
++            navigateTo(startScreen != null ? startScreen : "DASHBOARD");
+         }
+     }
+ 
++    /**
++     * Rebuilds the whole window so every panel picks up the active theme's colours.
++     * Screens that need data (result, goal detail) fall back to the dashboard.
++     */
++    public void rebuildUi() {
++        String screen = switch (currentScreenKey) {
++            case "SAVED_GOALS", "SETTINGS", "ARCHIVED_GOALS", "DASHBOARD" -> currentScreenKey;
++            default -> "DASHBOARD";
++        };
++        Rectangle bounds = getBounds();
++        dispose();
++        MainFrame fresh = new MainFrame(bounds, screen);
++        fresh.setVisible(true);
++    }
++
+     /**
+      * Navigates to a specific screen, refreshes its data, and updates navbar highlights.
+      */
+@@ -188,8 +218,7 @@ public class MainFrame extends JFrame {
+             } catch (SQLException ignored) {
+             }
+         }
+-        navbar.updateThemeToggleText();
+-        SwingUtilities.updateComponentTreeUI(this);
++        SwingUtilities.invokeLater(this::rebuildUi);
+     }
+ 
+     /**
+diff --git a/src/main/java/com/sfp/gui/OnboardingPanel.java b/src/main/java/com/sfp/gui/OnboardingPanel.java
+index 4218d49..6099680 100644
+--- a/src/main/java/com/sfp/gui/OnboardingPanel.java
++++ b/src/main/java/com/sfp/gui/OnboardingPanel.java
+@@ -45,7 +45,7 @@ public class OnboardingPanel extends JPanel {
+ 
+         JLabel titleLabel = new JLabel("Welcome to Smart Finance");
+         titleLabel.setFont(AppTheme.FONT_TITLE);
+-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        titleLabel.setForeground(AppTheme.getHeadingColor());
+         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+ 
+         JLabel subtitleLabel = new JLabel("Set up your financial profile to start planning goals.");
+diff --git a/src/main/java/com/sfp/gui/ResultPanel.java b/src/main/java/com/sfp/gui/ResultPanel.java
+index 3acdaf9..88953d0 100644
+--- a/src/main/java/com/sfp/gui/ResultPanel.java
++++ b/src/main/java/com/sfp/gui/ResultPanel.java
+@@ -55,7 +55,7 @@ public class ResultPanel extends JPanel {
+         // Header
+         itemNameHeader = new JLabel("Your Savings Projection");
+         itemNameHeader.setFont(AppTheme.FONT_TITLE);
+-        itemNameHeader.setForeground(AppTheme.NAVY_PRIMARY);
++        itemNameHeader.setForeground(AppTheme.getHeadingColor());
+         itemNameHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
+ 
+         JLabel subHeader = new JLabel("Here is what you need to save to reach your purchase goal.");
+@@ -233,7 +233,7 @@ public class ResultPanel extends JPanel {
+         titleLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+ 
+         valueLabel.setFont(AppTheme.FONT_HERO);
+-        valueLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        valueLabel.setForeground(AppTheme.getHeadingColor());
+         valueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+ 
+         box.add(titleLbl);
+diff --git a/src/main/java/com/sfp/gui/SavedGoalsPanel.java b/src/main/java/com/sfp/gui/SavedGoalsPanel.java
+index 5aae575..e43ad6a 100644
+--- a/src/main/java/com/sfp/gui/SavedGoalsPanel.java
++++ b/src/main/java/com/sfp/gui/SavedGoalsPanel.java
+@@ -57,7 +57,7 @@ public class SavedGoalsPanel extends JPanel {
+ 
+         JLabel titleLabel = new JLabel("Saved Financial Goals");
+         titleLabel.setFont(AppTheme.FONT_TITLE);
+-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        titleLabel.setForeground(AppTheme.getHeadingColor());
+ 
+         JButton addBtn = AppTheme.createPrimaryButton("+ Add New Goal");
+         addBtn.addActionListener(e -> mainFrame.showAddGoalForm());
+diff --git a/src/main/java/com/sfp/gui/SettingsPanel.java b/src/main/java/com/sfp/gui/SettingsPanel.java
+index b5e0427..056def4 100644
+--- a/src/main/java/com/sfp/gui/SettingsPanel.java
++++ b/src/main/java/com/sfp/gui/SettingsPanel.java
+@@ -47,7 +47,7 @@ public class SettingsPanel extends JPanel {
+ 
+         JLabel titleLabel = new JLabel("Application Preferences & Profile");
+         titleLabel.setFont(AppTheme.FONT_TITLE);
+-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        titleLabel.setForeground(AppTheme.getHeadingColor());
+ 
+         JLabel subtitle = new JLabel("Adjust your financial baseline and default currency preferences.");
+         subtitle.setFont(AppTheme.FONT_BODY);
+@@ -164,6 +164,7 @@ public class SettingsPanel extends JPanel {
+                 mainFrame.onUserUpdated(user);
+                 JOptionPane.showMessageDialog(this, "Preferences saved successfully!", "Saved", JOptionPane.INFORMATION_MESSAGE);
+                 mainFrame.navigateTo("DASHBOARD");
++                mainFrame.rebuildUi();
+             } catch (Exception ex) {
+                 JOptionPane.showMessageDialog(this, "Failed to update settings: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+             }
+diff --git a/src/main/java/com/sfp/gui/components/Navbar.java b/src/main/java/com/sfp/gui/components/Navbar.java
+index 5d3a543..36d6054 100644
+--- a/src/main/java/com/sfp/gui/components/Navbar.java
++++ b/src/main/java/com/sfp/gui/components/Navbar.java
+@@ -28,7 +28,7 @@ public class Navbar extends JPanel {
+         this.onThemeToggle = onThemeToggle;
+ 
+         setLayout(new BorderLayout());
+-        setBackground(AppTheme.isDarkMode() ? AppTheme.CARD_BG_DARK : Color.WHITE);
++        setBackground(AppTheme.getNavbarBackground());
+         setBorder(new CompoundBorder(
+             new MatteBorder(0, 0, 1, 0, AppTheme.getBorderColor()),
+             new EmptyBorder(10, 20, 10, 20)
+@@ -43,7 +43,7 @@ public class Navbar extends JPanel {
+ 
+         JLabel titleLabel = new JLabel("Smart Finance Planner");
+         titleLabel.setFont(AppTheme.FONT_SUBTITLE);
+-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        titleLabel.setForeground(AppTheme.getHeadingColor());
+ 
+         brandPanel.add(logoLabel);
+         brandPanel.add(titleLabel);
+@@ -100,7 +100,7 @@ public class Navbar extends JPanel {
+     public void setActiveScreen(String screenKey) {
+         navButtons.forEach((key, btn) -> {
+             if (key.equals(screenKey)) {
+-                btn.setForeground(AppTheme.NAVY_PRIMARY);
++                btn.setForeground(AppTheme.getHeadingColor());
+                 btn.setFont(AppTheme.FONT_BODY_BOLD);
+             } else {
+                 btn.setForeground(AppTheme.TEXT_MUTED);
+@@ -114,7 +114,7 @@ public class Navbar extends JPanel {
+      */
+     public void updateThemeToggleText() {
+         themeToggleBtn.setText(AppTheme.isDarkMode() ? "Light" : "Dark");
+-        setBackground(AppTheme.isDarkMode() ? AppTheme.CARD_BG_DARK : Color.WHITE);
++        setBackground(AppTheme.getNavbarBackground());
+         repaint();
+     }
+ }
+diff --git a/src/main/java/com/sfp/gui/components/StatCard.java b/src/main/java/com/sfp/gui/components/StatCard.java
+index c1658fd..c932d35 100644
+--- a/src/main/java/com/sfp/gui/components/StatCard.java
++++ b/src/main/java/com/sfp/gui/components/StatCard.java
+@@ -27,7 +27,7 @@ public class StatCard extends JPanel {
+ 
+         valueLabel = new JLabel(value);
+         valueLabel.setFont(AppTheme.FONT_SUBTITLE);
+-        valueLabel.setForeground(AppTheme.NAVY_PRIMARY);
++        valueLabel.setForeground(AppTheme.getHeadingColor());
+         valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+ 
+         subtitleLabel = new JLabel(subtitle);
+@@ -60,7 +60,7 @@ public class StatCard extends JPanel {
+     public void updateUI() {
+         super.updateUI();
+         if (valueLabel != null) {
+-            valueLabel.setForeground(AppTheme.isDarkMode() ? AppTheme.TEXT_PRIMARY_DARK : AppTheme.NAVY_PRIMARY);
++            valueLabel.setForeground(AppTheme.getHeadingColor());
+         }
+     }
+ }
+diff --git a/src/main/java/com/sfp/util/AppTheme.java b/src/main/java/com/sfp/util/AppTheme.java
+index ac1db99..67f80cc 100644
+--- a/src/main/java/com/sfp/util/AppTheme.java
++++ b/src/main/java/com/sfp/util/AppTheme.java
+@@ -31,6 +31,10 @@ public class AppTheme {
+     public static final Color CARD_BG_LIGHT = Color.decode("#FFFFFF");
+     public static final Color CARD_BG_DARK = Color.decode("#242A38");
+ 
++    // Dark-theme brand variants (navy has too little contrast on dark surfaces)
++    public static final Color HEADING_DARK = Color.decode("#C7D2FE");
++    public static final Color PRIMARY_DARK = Color.decode("#5B6CF0");
++
+     // Typography Colors
+     public static final Color TEXT_PRIMARY_LIGHT = Color.decode("#1A1A1A");
+     public static final Color TEXT_PRIMARY_DARK = Color.decode("#EDEDED");
+@@ -56,6 +60,7 @@ public class AppTheme {
+      * Initializes the default FlatLaf theme based on the stored preference string ("LIGHT" or "DARK").
+      */
+     public static void initTheme(String themePreference) {
++        applyGlobalDefaults();
+         if ("DARK".equalsIgnoreCase(themePreference)) {
+             FlatDarkLaf.setup();
+             isDark = true;
+@@ -69,6 +74,7 @@ public class AppTheme {
+      * Toggles between Light and Dark FlatLaf themes and refreshes UI trees.
+      */
+     public static void setTheme(String themeName) {
++        applyGlobalDefaults();
+         if ("DARK".equalsIgnoreCase(themeName)) {
+             FlatDarkLaf.setup();
+             isDark = true;
+@@ -79,6 +85,23 @@ public class AppTheme {
+         FlatLaf.updateUI();
+     }
+ 
++    /**
++     * Rounded corners, softer controls and a consistent accent for every FlatLaf component.
++     */
++    private static void applyGlobalDefaults() {
++        UIManager.put("Button.arc", 12);
++        UIManager.put("Component.arc", 12);
++        UIManager.put("TextComponent.arc", 10);
++        UIManager.put("ProgressBar.arc", 999);
++        UIManager.put("ScrollBar.thumbArc", 999);
++        UIManager.put("ScrollBar.width", 10);
++        UIManager.put("Component.focusWidth", 1);
++        UIManager.put("Component.innerFocusWidth", 0);
++        UIManager.put("TextField.margin", new Insets(6, 10, 6, 10));
++        UIManager.put("Spinner.buttonStyle", "button");
++        UIManager.put("ComboBox.padding", new Insets(5, 8, 5, 8));
++    }
++
+     /**
+      * Returns true if dark theme is currently active.
+      */
+@@ -114,13 +137,34 @@ public class AppTheme {
+         return isDark ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
+     }
+ 
++    /**
++     * Returns the colour for headings and hero numbers (navy on light, soft indigo on dark).
++     */
++    public static Color getHeadingColor() {
++        return isDark ? HEADING_DARK : NAVY_PRIMARY;
++    }
++
++    /**
++     * Returns the fill colour for primary buttons and active elements.
++     */
++    public static Color getPrimaryColor() {
++        return isDark ? PRIMARY_DARK : NAVY_PRIMARY;
++    }
++
++    /**
++     * Returns the navbar background for the active theme.
++     */
++    public static Color getNavbarBackground() {
++        return getCardBackground();
++    }
++
+     /**
+      * Creates a styled primary button with navy fill and white text.
+      */
+     public static JButton createPrimaryButton(String text) {
+         JButton button = new JButton(text);
+         button.setFont(FONT_BODY_BOLD);
+-        button.setBackground(NAVY_PRIMARY);
++        button.setBackground(getPrimaryColor());
+         button.setForeground(Color.WHITE);
+         button.setFocusPainted(false);
+         button.setBorder(BorderFactory.createEmptyBorder(10, 18, 10, 18));

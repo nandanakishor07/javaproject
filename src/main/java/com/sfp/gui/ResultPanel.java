@@ -55,7 +55,7 @@ public class ResultPanel extends JPanel {
         // Header
         itemNameHeader = new JLabel("Your Savings Projection");
         itemNameHeader.setFont(AppTheme.FONT_TITLE);
-        itemNameHeader.setForeground(AppTheme.NAVY_PRIMARY);
+        itemNameHeader.setForeground(AppTheme.getHeadingColor());
         itemNameHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel subHeader = new JLabel("Here is what you need to save to reach your purchase goal.");
@@ -233,7 +233,7 @@ public class ResultPanel extends JPanel {
         titleLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         valueLabel.setFont(AppTheme.FONT_HERO);
-        valueLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        valueLabel.setForeground(AppTheme.getHeadingColor());
         valueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         box.add(titleLbl);

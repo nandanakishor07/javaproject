@@ -31,6 +31,10 @@ public class AppTheme {
     public static final Color CARD_BG_LIGHT = Color.decode("#FFFFFF");
     public static final Color CARD_BG_DARK = Color.decode("#242A38");
 
+    // Dark-theme brand variants (navy has too little contrast on dark surfaces)
+    public static final Color HEADING_DARK = Color.decode("#C7D2FE");
+    public static final Color PRIMARY_DARK = Color.decode("#5B6CF0");
+
     // Typography Colors
     public static final Color TEXT_PRIMARY_LIGHT = Color.decode("#1A1A1A");
     public static final Color TEXT_PRIMARY_DARK = Color.decode("#EDEDED");
@@ -56,6 +60,7 @@ public class AppTheme {
      * Initializes the default FlatLaf theme based on the stored preference string ("LIGHT" or "DARK").
      */
     public static void initTheme(String themePreference) {
+        applyGlobalDefaults();
         if ("DARK".equalsIgnoreCase(themePreference)) {
             FlatDarkLaf.setup();
             isDark = true;
@@ -69,6 +74,7 @@ public class AppTheme {
      * Toggles between Light and Dark FlatLaf themes and refreshes UI trees.
      */
     public static void setTheme(String themeName) {
+        applyGlobalDefaults();
         if ("DARK".equalsIgnoreCase(themeName)) {
             FlatDarkLaf.setup();
             isDark = true;
@@ -77,6 +83,23 @@ public class AppTheme {
             isDark = false;
         }
         FlatLaf.updateUI();
+    }
+
+    /**
+     * Rounded corners, softer controls and a consistent accent for every FlatLaf component.
+     */
+    private static void applyGlobalDefaults() {
+        UIManager.put("Button.arc", 12);
+        UIManager.put("Component.arc", 12);
+        UIManager.put("TextComponent.arc", 10);
+        UIManager.put("ProgressBar.arc", 999);
+        UIManager.put("ScrollBar.thumbArc", 999);
+        UIManager.put("ScrollBar.width", 10);
+        UIManager.put("Component.focusWidth", 1);
+        UIManager.put("Component.innerFocusWidth", 0);
+        UIManager.put("TextField.margin", new Insets(6, 10, 6, 10));
+        UIManager.put("Spinner.buttonStyle", "button");
+        UIManager.put("ComboBox.padding", new Insets(5, 8, 5, 8));
     }
 
     /**
@@ -115,12 +138,33 @@ public class AppTheme {
     }
 
     /**
+     * Returns the colour for headings and hero numbers (navy on light, soft indigo on dark).
+     */
+    public static Color getHeadingColor() {
+        return isDark ? HEADING_DARK : NAVY_PRIMARY;
+    }
+
+    /**
+     * Returns the fill colour for primary buttons and active elements.
+     */
+    public static Color getPrimaryColor() {
+        return isDark ? PRIMARY_DARK : NAVY_PRIMARY;
+    }
+
+    /**
+     * Returns the navbar background for the active theme.
+     */
+    public static Color getNavbarBackground() {
+        return getCardBackground();
+    }
+
+    /**
      * Creates a styled primary button with navy fill and white text.
      */
     public static JButton createPrimaryButton(String text) {
         JButton button = new JButton(text);
         button.setFont(FONT_BODY_BOLD);
-        button.setBackground(NAVY_PRIMARY);
+        button.setBackground(getPrimaryColor());
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 18, 10, 18));

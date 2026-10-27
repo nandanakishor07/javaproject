@@ -28,7 +28,7 @@ public class Navbar extends JPanel {
         this.onThemeToggle = onThemeToggle;
 
         setLayout(new BorderLayout());
-        setBackground(AppTheme.isDarkMode() ? AppTheme.CARD_BG_DARK : Color.WHITE);
+        setBackground(AppTheme.getNavbarBackground());
         setBorder(new CompoundBorder(
             new MatteBorder(0, 0, 1, 0, AppTheme.getBorderColor()),
             new EmptyBorder(10, 20, 10, 20)
@@ -43,7 +43,7 @@ public class Navbar extends JPanel {
 
         JLabel titleLabel = new JLabel("Smart Finance Planner");
         titleLabel.setFont(AppTheme.FONT_SUBTITLE);
-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        titleLabel.setForeground(AppTheme.getHeadingColor());
 
         brandPanel.add(logoLabel);
         brandPanel.add(titleLabel);
@@ -100,7 +100,7 @@ public class Navbar extends JPanel {
     public void setActiveScreen(String screenKey) {
         navButtons.forEach((key, btn) -> {
             if (key.equals(screenKey)) {
-                btn.setForeground(AppTheme.NAVY_PRIMARY);
+                btn.setForeground(AppTheme.getHeadingColor());
                 btn.setFont(AppTheme.FONT_BODY_BOLD);
             } else {
                 btn.setForeground(AppTheme.TEXT_MUTED);
@@ -114,7 +114,7 @@ public class Navbar extends JPanel {
      */
     public void updateThemeToggleText() {
         themeToggleBtn.setText(AppTheme.isDarkMode() ? "Light" : "Dark");
-        setBackground(AppTheme.isDarkMode() ? AppTheme.CARD_BG_DARK : Color.WHITE);
+        setBackground(AppTheme.getNavbarBackground());
         repaint();
     }
 }

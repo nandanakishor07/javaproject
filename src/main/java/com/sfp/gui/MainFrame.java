@@ -50,11 +50,22 @@ public class MainFrame extends JFrame {
      * Constructs MainFrame and initializes all panels, DAOs, and database dependencies.
      */
     public MainFrame() {
+        this(null, null);
+    }
+
+    /**
+     * Constructs MainFrame, optionally restoring a previous window position and screen
+     * (used when the UI is rebuilt after a theme change).
+     */
+    public MainFrame(Rectangle previousBounds, String startScreen) {
         setTitle("Smart Finance Planner");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 740);
         setMinimumSize(new Dimension(960, 600));
         setLocationRelativeTo(null);
+        if (previousBounds != null) {
+            setBounds(previousBounds);
+        }
 
         // Core singletons
         dbManager = new DatabaseManager();
@@ -77,6 +88,11 @@ public class MainFrame extends JFrame {
             currentUser = userDao.findFirst();
         } catch (SQLException e) {
             currentUser = null;
+        }
+
+        // Apply the saved theme first so every panel is built with the right colours
+        if (currentUser != null) {
+            AppTheme.initTheme(currentUser.getTheme());
         }
 
         // Setup CardLayout
@@ -113,10 +129,24 @@ public class MainFrame extends JFrame {
             navbar.setVisible(false);
             navigateTo("ONBOARDING");
         } else {
-            AppTheme.initTheme(currentUser.getTheme());
             navbar.setVisible(true);
-            navigateTo("DASHBOARD");
+            navigateTo(startScreen != null ? startScreen : "DASHBOARD");
         }
+    }
+
+    /**
+     * Rebuilds the whole window so every panel picks up the active theme's colours.
+     * Screens that need data (result, goal detail) fall back to the dashboard.
+     */
+    public void rebuildUi() {
+        String screen = switch (currentScreenKey) {
+            case "SAVED_GOALS", "SETTINGS", "ARCHIVED_GOALS", "DASHBOARD" -> currentScreenKey;
+            default -> "DASHBOARD";
+        };
+        Rectangle bounds = getBounds();
+        dispose();
+        MainFrame fresh = new MainFrame(bounds, screen);
+        fresh.setVisible(true);
     }
 
     /**
@@ -188,8 +218,7 @@ public class MainFrame extends JFrame {
             } catch (SQLException ignored) {
             }
         }
-        navbar.updateThemeToggleText();
-        SwingUtilities.updateComponentTreeUI(this);
+        SwingUtilities.invokeLater(this::rebuildUi);
     }
 
     /**

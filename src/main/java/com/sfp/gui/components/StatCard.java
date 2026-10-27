@@ -27,7 +27,7 @@ public class StatCard extends JPanel {
 
         valueLabel = new JLabel(value);
         valueLabel.setFont(AppTheme.FONT_SUBTITLE);
-        valueLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        valueLabel.setForeground(AppTheme.getHeadingColor());
         valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         subtitleLabel = new JLabel(subtitle);
@@ -60,7 +60,7 @@ public class StatCard extends JPanel {
     public void updateUI() {
         super.updateUI();
         if (valueLabel != null) {
-            valueLabel.setForeground(AppTheme.isDarkMode() ? AppTheme.TEXT_PRIMARY_DARK : AppTheme.NAVY_PRIMARY);
+            valueLabel.setForeground(AppTheme.getHeadingColor());
         }
     }
 }

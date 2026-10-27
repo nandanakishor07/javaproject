@@ -100,7 +100,7 @@ public class GoalDetailPanel extends JPanel {
 
         titleLabel = new JLabel("Goal Details");
         titleLabel.setFont(AppTheme.FONT_TITLE);
-        titleLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        titleLabel.setForeground(AppTheme.getHeadingColor());
 
         onTrackBadge = new JLabel(" ✓ ON TRACK ");
         onTrackBadge.setFont(AppTheme.FONT_SMALL_BOLD);
@@ -126,7 +126,7 @@ public class GoalDetailPanel extends JPanel {
 
         remainingAmountLabel = new JLabel("Remaining: ₹0.00");
         remainingAmountLabel.setFont(AppTheme.FONT_BODY_BOLD);
-        remainingAmountLabel.setForeground(AppTheme.NAVY_PRIMARY);
+        remainingAmountLabel.setForeground(AppTheme.getHeadingColor());
 
         numbersRow.add(progressSummaryLabel, BorderLayout.WEST);
         numbersRow.add(remainingAmountLabel, BorderLayout.EAST);
@@ -158,7 +158,7 @@ public class GoalDetailPanel extends JPanel {
 
         JLabel historyTitle = new JLabel("Contribution History");
         historyTitle.setFont(AppTheme.FONT_SECTION);
-        historyTitle.setForeground(AppTheme.NAVY_PRIMARY);
+        historyTitle.setForeground(AppTheme.getHeadingColor());
 
         JButton deleteEntryBtn = AppTheme.createSecondaryButton("Delete Selected Entry");
         deleteEntryBtn.addActionListener(e -> handleDeleteSelectedContribution());
