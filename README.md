@@ -1,6 +1,6 @@
 # Smart Finance Planner
 
-> A desktop Java financial planning application built with Java 17, Swing, FlatLaf, SQLite JDBC, and JUnit 5.
+> A desktop Java financial planning application built with Java 25 (LTS), Swing, FlatLaf, SQLite JDBC, and JUnit 5.
 
 Smart Finance Planner helps individuals calculate the real future cost of purchase goals (laptops, vehicles, education, real estate down payments) by compounding annual inflation, then works backward from their monthly income and target savings rate to recommend feasible monthly and yearly savings plans. The application supports multi-currency display, manual contribution tracking with pacing indicators, soft-delete archiving, and a modern desktop UI.
 
@@ -40,7 +40,7 @@ gui/ (Swing + FlatLaf)  ──►  engine/ (pure logic)  ──►  data/ (DAO S
 
 | Layer | Technology |
 |---|---|
-| **Language** | Java 17 (or Java 21+ with `release 17` compatibility) |
+| **Language** | Java 25 (LTS) |
 | **GUI Framework** | Swing + FlatLaf 3.6 |
 | **Database** | SQLite via SQLite JDBC 3.49.1.0 (`org.xerial:sqlite-jdbc`) |
 | **Build & Tooling** | Apache Maven 3.9.9 via Maven Wrapper (`mvnw` / `mvnw.cmd` / `mvn.cmd`) |

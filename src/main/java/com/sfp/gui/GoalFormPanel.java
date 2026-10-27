@@ -29,8 +29,7 @@ public class GoalFormPanel extends JPanel {
     private final JComboBox<Currency> currencyCombo;
     private final JSpinner targetYearSpinner;
     private final JSpinner inflationSpinner;
-    private final JRadioButton shortTermRadio;
-    private final JRadioButton longTermRadio;
+    private final JLabel termValueLabel;
     private final JTextField incomeField;
     private final JSpinner savingsSpinner;
 
@@ -81,33 +80,27 @@ public class GoalFormPanel extends JPanel {
 
         // Input components
         itemNameField = new JTextField();
+        itemNameField.putClientProperty("JTextField.placeholderText",
+                "e.g. Car, Laptop, House down payment");
         priceField = new JTextField();
         currencyCombo = new JComboBox<>(Currency.values());
 
         int curYear = DateUtil.currentYear();
-        targetYearSpinner = new JSpinner(new SpinnerNumberModel(curYear + 1, curYear + 1, curYear + 50, 1));
-        inflationSpinner = new JSpinner(new SpinnerNumberModel(6.0, 0.0, 50.0, 0.5));
-
-        shortTermRadio = new JRadioButton("Short-Term (≤ 3 yrs)");
-        longTermRadio = new JRadioButton("Long-Term (> 3 yrs)");
-        ButtonGroup termGroup = new ButtonGroup();
-        termGroup.add(shortTermRadio);
-        termGroup.add(longTermRadio);
-        shortTermRadio.setSelected(true);
-
-        // Auto-select term when target year changes
-        targetYearSpinner.addChangeListener(e -> {
-            int target = (int) targetYearSpinner.getValue();
-            int diff = target - DateUtil.currentYear();
-            if (diff <= 3) {
-                shortTermRadio.setSelected(true);
-            } else {
-                longTermRadio.setSelected(true);
-            }
-        });
+        targetYearSpinner = new JSpinner(new SpinnerNumberModel(curYear + 1, curYear, curYear + 50, 1));
+        configureSpinner(targetYearSpinner, "#");
+        inflationSpinner = new JSpinner(new SpinnerNumberModel(
+                6.0, Validator.MIN_INFLATION, Validator.MAX_INFLATION, 0.5));
+        configureSpinner(inflationSpinner, "#.#");
+        termValueLabel = new JLabel();
+        termValueLabel.setFont(AppTheme.FONT_SMALL);
+        termValueLabel.setForeground(AppTheme.getTextPrimary());
+        targetYearSpinner.addChangeListener(e -> updateTermLabel());
+        updateTermLabel();
 
         incomeField = new JTextField();
-        savingsSpinner = new JSpinner(new SpinnerNumberModel(20.0, 1.0, 100.0, 1.0));
+        savingsSpinner = new JSpinner(new SpinnerNumberModel(
+                20.0, Validator.MIN_SAVINGS_PERCENT, Validator.MAX_SAVINGS_PERCENT, 0.5));
+        configureSpinner(savingsSpinner, "#.#");
 
         // Error labels
         itemNameError = createErrorLabel();
@@ -135,12 +128,11 @@ public class GoalFormPanel extends JPanel {
         card.add(yearInfRow);
         card.add(Box.createVerticalStrut(10));
 
-        // Goal Term Toggle
+        // Goal term is derived from the target year.
         JPanel termPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
         termPanel.setOpaque(false);
         termPanel.add(new JLabel("Goal Term:"));
-        termPanel.add(shortTermRadio);
-        termPanel.add(longTermRadio);
+        termPanel.add(termValueLabel);
         card.add(termPanel);
         card.add(Box.createVerticalStrut(10));
 
@@ -197,7 +189,6 @@ public class GoalFormPanel extends JPanel {
         int nextYear = DateUtil.currentYear() + 1;
         targetYearSpinner.setValue(nextYear);
         inflationSpinner.setValue(6.0);
-        shortTermRadio.setSelected(true);
     }
 
     /**
@@ -213,12 +204,6 @@ public class GoalFormPanel extends JPanel {
         currencyCombo.setSelectedItem(Currency.fromCode(goal.getCurrencyCode()));
         targetYearSpinner.setValue(goal.getTargetYear());
         inflationSpinner.setValue(goal.getInflationRate());
-
-        if ("LONG".equalsIgnoreCase(goal.getTermType())) {
-            longTermRadio.setSelected(true);
-        } else {
-            shortTermRadio.setSelected(true);
-        }
 
         User user = mainFrame.getCurrentUser();
         if (user != null) {
@@ -301,7 +286,7 @@ public class GoalFormPanel extends JPanel {
 
         Currency selectedCurrency = (Currency) currencyCombo.getSelectedItem();
         String currencyCode = selectedCurrency != null ? selectedCurrency.getCode() : "INR";
-        String termType = shortTermRadio.isSelected() ? "SHORT" : "LONG";
+        String termType = targetYear - DateUtil.currentYear() <= 3 ? "SHORT" : "LONG";
 
         User user = mainFrame.getCurrentUser();
         int userId = user != null ? user.getId() : 1;
@@ -338,6 +323,23 @@ public class GoalFormPanel extends JPanel {
         lbl.setFont(AppTheme.FONT_SMALL);
         lbl.setForeground(AppTheme.RED_ERROR);
         return lbl;
+    }
+
+    private void configureSpinner(JSpinner spinner, String numberPattern) {
+        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner, numberPattern);
+        spinner.setEditor(editor);
+        spinner.setEnabled(true);
+        editor.setEnabled(true);
+        editor.getTextField().setEnabled(true);
+        editor.getTextField().setEditable(true);
+        for (Component component : spinner.getComponents()) {
+            component.setEnabled(true);
+        }
+    }
+
+    private void updateTermLabel() {
+        int years = (int) targetYearSpinner.getValue() - DateUtil.currentYear();
+        termValueLabel.setText(years <= 3 ? "Short-Term (3 years or less)" : "Long-Term (more than 3 years)");
     }
 
     private JPanel createFieldWithInlineError(String labelText, JComponent input, JLabel errorLabel) {

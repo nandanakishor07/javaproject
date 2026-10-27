@@ -16,7 +16,7 @@ This is a single-user, offline, no-login desktop tool — not a certified financ
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Language | **Java 17 (LTS)** | Core language for the whole project — no Kotlin, no Python. |
+| Language | **Java 25 (LTS)** | Core language for the whole project — no Kotlin, no Python. |
 | GUI | **Swing + FlatLaf** (`com.formdev:flatlaf`) | Swing is the required GUI toolkit for this course project, but plain Swing looks dated. FlatLaf is a drop-in modern Look-and-Feel library (pure Java, no native dependencies) that gives Swing a flat, professional, IDE-quality appearance with almost no extra code — use `FlatLightLaf` as default, with an optional `FlatDarkLaf` theme toggle. |
 | Database | **SQLite via JDBC** (`org.xerial:sqlite-jdbc`) | A real embedded SQL database — no server, no network, single `.db` file shipped alongside the app. All persistence must go through SQL (`CREATE TABLE`, `INSERT`, `SELECT`, `UPDATE`, `DELETE`) via `PreparedStatement`. No CSV files, no flat-file storage. |
 | Build tool | **Maven** | Use a `pom.xml` with dependencies for `flatlaf`, `sqlite-jdbc`, and `junit-jupiter`. This keeps builds reproducible and matches how a grader/agent would rebuild the project. |
@@ -233,7 +233,7 @@ Apply this consistently across every screen so the app doesn't look like a stock
 - Nav access to: Saved Goals (full list), Settings, Archived Goals.
 
 ### 11.3 Add / Edit Goal
-- Fields: Item Name, Current Price, Currency (dropdown), Target Year (spinner), Inflation Rate % (spinner, default 6), Goal Term (Short/Long radio or toggle), Monthly Income (pre-filled from user profile, editable), Savings % (pre-filled, editable).
+- Fields: Item Name, Current Price, Currency (dropdown), Target Year (spinner), Inflation Rate % (spinner, default 6), Goal Term (automatically shown as a label based on the target year: Short-Term for 3 years or less, Long-Term for more than 3 years), Monthly Income (pre-filled from user profile, editable), Savings % (pre-filled, editable).
 - "Calculate" button — runs `Validator`, then `InflationCalculator` + `SavingsPlanner`, then routes to Result screen with computed values (not yet saved to DB).
 - Inline validation: field-level red helper text under any invalid field (not just a popup dialog), per §13.
 

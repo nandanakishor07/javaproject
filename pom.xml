@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <flatlaf.version>3.6</flatlaf.version>
         <sqlite.version>3.49.1.0</sqlite.version>
         <junit.version>5.11.3</junit.version>
@@ -47,7 +47,7 @@
 
     <build>
         <plugins>
-            <!-- Compiler plugin configured for Java 17 release -->
+            <!-- Compile against the Java 25 API and class-file level -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

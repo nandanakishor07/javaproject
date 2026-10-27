@@ -8,7 +8,7 @@ Team execution guide for Advanced Programming (Java). Companion to `SPEC.md` (th
 
 | Item | Requirement |
 |---|---|
-| JDK | 17 or 21 (LTS) — install and confirm with `java -version` |
+| JDK | 25 (LTS) — install and confirm with `java -version` |
 | IDE | Antigravity (primary), or IntelliJ IDEA / VS Code as a fallback for manual edits |
 | Build tool | Maven — confirm with `mvn -version` |
 | Database | No separate install needed — SQLite ships as an embedded JDBC driver dependency (`org.xerial:sqlite-jdbc`) declared in `pom.xml` |

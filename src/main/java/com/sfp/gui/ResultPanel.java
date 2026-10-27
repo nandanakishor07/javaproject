@@ -49,7 +49,7 @@ public class ResultPanel extends JPanel {
         // Center Card (Max width 640px)
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setMaximumSize(new Dimension(640, 560));
+        card.setMaximumSize(new Dimension(640, Integer.MAX_VALUE));
         AppTheme.applyCardStyle(card);
 
         // Header
@@ -84,7 +84,7 @@ public class ResultPanel extends JPanel {
 
         // Feasibility Banner
         feasibilityBanner = new JPanel(new BorderLayout());
-        feasibilityBanner.setMaximumSize(new Dimension(580, 50));
+        feasibilityBanner.setMaximumSize(new Dimension(580, Integer.MAX_VALUE));
         feasibilityLabel = new JLabel("", SwingConstants.CENTER);
         feasibilityLabel.setFont(AppTheme.FONT_BODY_BOLD);
         feasibilityBanner.add(feasibilityLabel, BorderLayout.CENTER);
@@ -94,7 +94,7 @@ public class ResultPanel extends JPanel {
         JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));
         buttonRow.setOpaque(false);
 
-        JButton backBtn = AppTheme.createSecondaryButton("← Edit Inputs / Recalculate");
+        JButton backBtn = AppTheme.createSecondaryButton("Edit Inputs / Recalculate");
         backBtn.addActionListener(e -> {
             if (isEditMode) {
                 mainFrame.showEditGoalForm(currentGoal);
@@ -103,7 +103,7 @@ public class ResultPanel extends JPanel {
             }
         });
 
-        saveButton = AppTheme.createPrimaryButton("Save This Goal ✓");
+        saveButton = AppTheme.createPrimaryButton("Save This Goal");
         saveButton.addActionListener(e -> handleSaveGoal());
 
         buttonRow.add(backBtn);
@@ -143,17 +143,18 @@ public class ResultPanel extends JPanel {
 
         int years = Math.max(1, goal.getTargetYear() - DateUtil.currentYear());
         double yearly = goal.getFutureCost() / years;
-        yearlySavingDetail.setText("Equivalent to " + CurrencyFormatter.format(yearly, currencyCode) + " per year over " + years + " years");
+        String yearLabel = years == 1 ? "1 year" : years + " years";
+        yearlySavingDetail.setText("Equivalent to " + CurrencyFormatter.format(yearly, currencyCode)
+                + " per year over " + yearLabel);
 
         breakdownLabel.setText(String.format(
-            "Current price: %s  •  Inflation: %.1f%%  •  Timeline: %d years (%s-term)",
+            "Current price: %s  |  Inflation: %.1f%%  |  Timeline: %s (%s-term)",
             CurrencyFormatter.format(goal.getCurrentPrice(), currencyCode),
             goal.getInflationRate(),
-            years,
+            yearLabel,
             goal.getTermType()
         ));
 
-        // Format Feasibility Banner
         if (isFeasible) {
             feasibilityBanner.setBackground(AppTheme.GREEN_LIGHT);
             feasibilityBanner.setBorder(new CompoundBorder(
@@ -161,10 +162,9 @@ public class ResultPanel extends JPanel {
                 new EmptyBorder(10, 16, 10, 16)
             ));
             feasibilityLabel.setForeground(AppTheme.GREEN_ACCENT);
-            feasibilityLabel.setText(String.format(
-                "✓ Fits comfortably within your plan (requires %.1f%% of income, target cap is %.1f%%)",
-                percentOfIncome, targetSavingsPercent
-            ));
+            setFeasibilityMessage(String.format(
+                    "Achievable: needs %.1f%% of your income, within your %.1f%% limit.",
+                    percentOfIncome, targetSavingsPercent), AppTheme.GREEN_ACCENT);
         } else {
             feasibilityBanner.setBackground(AppTheme.AMBER_LIGHT);
             feasibilityBanner.setBorder(new CompoundBorder(
@@ -172,13 +172,19 @@ public class ResultPanel extends JPanel {
                 new EmptyBorder(10, 16, 10, 16)
             ));
             feasibilityLabel.setForeground(AppTheme.AMBER_WARNING);
-            feasibilityLabel.setText(String.format(
-                "⚠ High stretch: requires %.1f%% of income (target cap is %.1f%%) — consider extending target year",
-                percentOfIncome, targetSavingsPercent
-            ));
+            setFeasibilityMessage(String.format(
+                    "Needs %.1f%% of your income, above your %.1f%% limit. "
+                            + "Raise your savings rate to at least %.1f%%, or extend the target year.",
+                    percentOfIncome, targetSavingsPercent, percentOfIncome), AppTheme.AMBER_WARNING);
         }
 
-        saveButton.setText(isEditMode ? "Save Changes ✓" : "Save This Goal ✓");
+        saveButton.setText(isEditMode ? "Save Changes" : "Save This Goal");
+    }
+
+    private void setFeasibilityMessage(String message, Color color) {
+        String htmlColor = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+        feasibilityLabel.setText("<html><div style='width:420px; text-align:center; color:"
+                + htmlColor + ";'>" + message + "</div></html>");
     }
 
     /**
