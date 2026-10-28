@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 /**
  * Modern goal card displaying financial goals with progress bars, status badges, and action buttons.
  */
-public class GoalCard extends JPanel {
+public class GoalCard extends AppTheme.CardPanel {
 
     /**
      * Constructs a GoalCard with progress metrics and action callbacks.
@@ -20,30 +20,36 @@ public class GoalCard extends JPanel {
                     Consumer<Goal> onViewDetails, Consumer<Goal> onEdit, Consumer<Goal> onArchive) {
         setLayout(new BorderLayout(12, 10));
         AppTheme.applyCardStyle(this);
+        setBorder(BorderFactory.createCompoundBorder(
+                new javax.swing.border.EmptyBorder(4, 4, 4, 4),
+                new javax.swing.border.EmptyBorder(12, 16, 12, 16)));
+        setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, 170));
+        setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Header: Item Name, Term Badge, and Status Badge
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setOpaque(false);
 
         JLabel titleLabel = new JLabel(goal.getItemName());
-        titleLabel.setFont(AppTheme.FONT_SUBTITLE);
+        titleLabel.setFont(AppTheme.FONT_BODY_BOLD);
         titleLabel.setForeground(AppTheme.getTextPrimary());
 
         JPanel badgesPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
         badgesPanel.setOpaque(false);
 
-        JLabel termBadge = createBadge(goal.getTermType() + "-TERM", new Color(224, 231, 255), AppTheme.NAVY_PRIMARY);
+        JLabel termBadge = createBadge(goal.getTermType() + "-TERM",
+                AppTheme.getAccentBackground(), AppTheme.getAccentColor());
         badgesPanel.add(termBadge);
 
         if ("COMPLETED".equalsIgnoreCase(goal.getStatus())) {
-            badgesPanel.add(createBadge("✓ COMPLETED", AppTheme.GREEN_LIGHT, AppTheme.GREEN_ACCENT));
+            badgesPanel.add(createBadge("COMPLETED", AppTheme.getSuccessBackground(), AppTheme.getSuccessColor()));
         } else if ("ARCHIVED".equalsIgnoreCase(goal.getStatus())) {
-            badgesPanel.add(createBadge("ARCHIVED", new Color(243, 244, 246), AppTheme.TEXT_MUTED));
+            badgesPanel.add(createBadge("ARCHIVED", AppTheme.getBorderColor(), AppTheme.getTextMuted()));
         } else {
             if (isOnTrack) {
-                badgesPanel.add(createBadge("✓ ON TRACK", AppTheme.GREEN_LIGHT, AppTheme.GREEN_ACCENT));
+                badgesPanel.add(createBadge("ON TRACK", AppTheme.getSuccessBackground(), AppTheme.getSuccessColor()));
             } else {
-                badgesPanel.add(createBadge("⚠ BEHIND", AppTheme.AMBER_LIGHT, AppTheme.AMBER_WARNING));
+                badgesPanel.add(createBadge("BEHIND", AppTheme.getWarningBackground(), AppTheme.getWarningColor()));
             }
         }
 
@@ -51,35 +57,46 @@ public class GoalCard extends JPanel {
         headerPanel.add(badgesPanel, BorderLayout.EAST);
 
         // Center: Financial numbers & Progress bar
-        JPanel centerPanel = new JPanel(new GridLayout(3, 1, 0, 6));
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setOpaque(false);
 
         String costText = CurrencyFormatter.format(goal.getFutureCost(), goal.getCurrencyCode());
         String savingText = CurrencyFormatter.format(goal.getMonthlySaving(), goal.getCurrencyCode()) + " / month";
         JLabel targetLabel = new JLabel("Target: " + goal.getTargetYear() + "  |  Future Cost: " + costText + "  (" + savingText + ")");
-        targetLabel.setFont(AppTheme.FONT_BODY);
-        targetLabel.setForeground(AppTheme.TEXT_MUTED);
+        targetLabel.setFont(AppTheme.FONT_SMALL);
+        targetLabel.setForeground(AppTheme.getTextMuted());
+        targetLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         double progressPercent = goal.getFutureCost() > 0 ? (totalContributed / goal.getFutureCost()) * 100.0 : 0.0;
         CustomProgressBar progressBar = new CustomProgressBar(progressPercent);
-        if ("COMPLETED".equalsIgnoreCase(goal.getStatus()) || progressPercent >= 100.0) {
-            progressBar.setFillColor(AppTheme.GREEN_ACCENT);
-        } else if (!isOnTrack) {
-            progressBar.setFillColor(AppTheme.AMBER_WARNING);
-        }
+        progressBar.setShowLabel(false);
+        progressBar.setFillColor(AppTheme.getAccentColor());
 
         String savedText = CurrencyFormatter.format(totalContributed, goal.getCurrencyCode());
         JLabel progressTextLabel = new JLabel(savedText + " of " + costText + " saved (" + String.format("%.1f", progressPercent) + "%)");
         progressTextLabel.setFont(AppTheme.FONT_SMALL_BOLD);
         progressTextLabel.setForeground(AppTheme.getTextPrimary());
 
+        JPanel progressRow = new JPanel(new BorderLayout(10, 0));
+        progressRow.setOpaque(false);
+        progressRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel percentLabel = new JLabel(String.format("%.1f%%", progressPercent));
+        percentLabel.setFont(AppTheme.FONT_SMALL_BOLD);
+        percentLabel.setForeground(AppTheme.getTextMuted());
+        progressRow.add(progressBar, BorderLayout.CENTER);
+        progressRow.add(percentLabel, BorderLayout.EAST);
+
         centerPanel.add(targetLabel);
-        centerPanel.add(progressBar);
+        centerPanel.add(Box.createVerticalStrut(4));
+        centerPanel.add(progressRow);
+        centerPanel.add(Box.createVerticalStrut(2));
         centerPanel.add(progressTextLabel);
 
         // Footer: Action Buttons
         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         footerPanel.setOpaque(false);
+        footerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         if (onViewDetails != null) {
             JButton viewBtn = AppTheme.createPrimaryButton("View Details");
@@ -113,7 +130,18 @@ public class GoalCard extends JPanel {
         badge.setOpaque(true);
         badge.setBackground(bg);
         badge.setForeground(fg);
-        badge.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
+        badge.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(bg, 1, true),
+                BorderFactory.createEmptyBorder(2, 6, 2, 6)));
         return badge;
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        if (getComponentCount() > 0) {
+            revalidate();
+            repaint();
+        }
     }
 }

@@ -53,7 +53,9 @@ public class SavedGoalsPanel extends JPanel {
         // Header & Controls Toolbar
         JPanel toolbar = new JPanel(new BorderLayout(14, 10));
         toolbar.setOpaque(false);
-        toolbar.setBorder(new EmptyBorder(24, 28, 16, 28));
+        toolbar.setBorder(new EmptyBorder(AppTheme.SPACE_24, AppTheme.PAGE_PADDING,
+                AppTheme.SPACE_16, AppTheme.PAGE_PADDING));
+        toolbar.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, Integer.MAX_VALUE));
 
         JLabel titleLabel = new JLabel("Saved Financial Goals");
         titleLabel.setFont(AppTheme.FONT_TITLE);
@@ -72,6 +74,7 @@ public class SavedGoalsPanel extends JPanel {
         controlsRow.setOpaque(false);
 
         searchField = new JTextField(15);
+        AppTheme.styleInput(searchField);
         searchField.putClientProperty("JTextField.placeholderText", "Search by item name...");
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { applyFiltersAndSort(); }
@@ -80,6 +83,7 @@ public class SavedGoalsPanel extends JPanel {
         });
 
         filterCombo = new JComboBox<>(new String[]{"Active Goals", "Completed Goals", "All Goals", "Archived Goals"});
+        AppTheme.styleInput(filterCombo);
         filterCombo.addActionListener(e -> applyFiltersAndSort());
 
         sortCombo = new JComboBox<>(new String[]{
@@ -88,6 +92,7 @@ public class SavedGoalsPanel extends JPanel {
             "Future Cost (Highest)", 
             "Item Name (A-Z)"
         });
+        AppTheme.styleInput(sortCombo);
         sortCombo.addActionListener(e -> applyFiltersAndSort());
 
         controlsRow.add(new JLabel("Search:"));
@@ -99,13 +104,14 @@ public class SavedGoalsPanel extends JPanel {
 
         toolbar.add(titleRow, BorderLayout.NORTH);
         toolbar.add(controlsRow, BorderLayout.SOUTH);
-        add(toolbar, BorderLayout.NORTH);
+        add(AppTheme.centeredContent(toolbar), BorderLayout.NORTH);
 
         // Goals List Scrollable Area
         goalsContainer = new JPanel();
         goalsContainer.setLayout(new BoxLayout(goalsContainer, BoxLayout.Y_AXIS));
         goalsContainer.setOpaque(false);
-        goalsContainer.setBorder(new EmptyBorder(0, 28, 24, 28));
+        goalsContainer.setBorder(new EmptyBorder(0, AppTheme.PAGE_PADDING,
+                AppTheme.PAGE_PADDING, AppTheme.PAGE_PADDING));
 
         JScrollPane scrollPane = new JScrollPane(goalsContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -113,6 +119,8 @@ public class SavedGoalsPanel extends JPanel {
         scrollPane.getViewport().setOpaque(false);
         scrollPane.getVerticalScrollBar().setUnitIncrement(12);
 
+        JPanel centeredList = AppTheme.centeredContent(goalsContainer);
+        scrollPane.setViewportView(centeredList);
         add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -248,13 +256,16 @@ public class SavedGoalsPanel extends JPanel {
      * Renders a friendly empty message when no search or filter results match.
      */
     private JPanel createEmptyFilterState() {
-        JPanel p = new JPanel();
+        JPanel p = AppTheme.createCardPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-        AppTheme.applyCardStyle(p);
-        p.setMaximumSize(new Dimension(800, 160));
+        p.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, 160));
 
-        JLabel icon = new JLabel("🔍");
-        icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
+        JLabel icon = new JLabel("SFP");
+        icon.setFont(AppTheme.FONT_SMALL_BOLD);
+        icon.setForeground(Color.WHITE);
+        icon.setOpaque(true);
+        icon.setBackground(AppTheme.getAccentColor());
+        icon.setBorder(new EmptyBorder(6, 8, 6, 8));
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel msg = new JLabel("No matching goals found");
@@ -264,7 +275,7 @@ public class SavedGoalsPanel extends JPanel {
 
         JLabel sub = new JLabel("Try adjusting your search keywords or switching status filters.");
         sub.setFont(AppTheme.FONT_BODY);
-        sub.setForeground(AppTheme.TEXT_MUTED);
+        sub.setForeground(AppTheme.getTextMuted());
         sub.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         p.add(Box.createVerticalStrut(10));

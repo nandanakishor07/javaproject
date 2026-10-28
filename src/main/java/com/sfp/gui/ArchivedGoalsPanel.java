@@ -36,7 +36,9 @@ public class ArchivedGoalsPanel extends JPanel {
         // Header Toolbar
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setOpaque(false);
-        headerPanel.setBorder(new EmptyBorder(24, 28, 16, 28));
+        headerPanel.setBorder(new EmptyBorder(AppTheme.SPACE_24, AppTheme.PAGE_PADDING,
+                AppTheme.SPACE_16, AppTheme.PAGE_PADDING));
+        headerPanel.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, Integer.MAX_VALUE));
 
         JLabel titleLabel = new JLabel("Archived Goals");
         titleLabel.setFont(AppTheme.FONT_TITLE);
@@ -44,7 +46,7 @@ public class ArchivedGoalsPanel extends JPanel {
 
         JLabel subtitle = new JLabel("Goals moved here are hidden from the active dashboard. You can restore or permanently delete them.");
         subtitle.setFont(AppTheme.FONT_BODY);
-        subtitle.setForeground(AppTheme.TEXT_MUTED);
+        subtitle.setForeground(AppTheme.getTextMuted());
 
         JPanel titles = new JPanel();
         titles.setLayout(new BoxLayout(titles, BoxLayout.Y_AXIS));
@@ -54,13 +56,14 @@ public class ArchivedGoalsPanel extends JPanel {
         titles.add(subtitle);
 
         headerPanel.add(titles, BorderLayout.WEST);
-        add(headerPanel, BorderLayout.NORTH);
+        add(AppTheme.centeredContent(headerPanel), BorderLayout.NORTH);
 
         // List Container
         listContainer = new JPanel();
         listContainer.setLayout(new BoxLayout(listContainer, BoxLayout.Y_AXIS));
         listContainer.setOpaque(false);
-        listContainer.setBorder(new EmptyBorder(0, 28, 24, 28));
+        listContainer.setBorder(new EmptyBorder(0, AppTheme.PAGE_PADDING,
+                AppTheme.PAGE_PADDING, AppTheme.PAGE_PADDING));
 
         JScrollPane scrollPane = new JScrollPane(listContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -68,6 +71,7 @@ public class ArchivedGoalsPanel extends JPanel {
         scrollPane.getViewport().setOpaque(false);
         scrollPane.getVerticalScrollBar().setUnitIncrement(12);
 
+        scrollPane.setViewportView(AppTheme.centeredContent(listContainer));
         add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -123,9 +127,12 @@ public class ArchivedGoalsPanel extends JPanel {
      * Creates a card with Restore and Delete Permanently actions.
      */
     private JPanel createArchivedCard(Goal goal) {
-        JPanel card = new JPanel(new BorderLayout(12, 10));
+        JPanel card = AppTheme.createCardPanel();
+        card.setLayout(new BorderLayout(12, 10));
         AppTheme.applyCardStyle(card);
-        card.setMaximumSize(new Dimension(850, 100));
+        card.setBorder(new javax.swing.border.EmptyBorder(12, 16, 12, 16));
+        card.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, 100));
+        card.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel left = new JPanel(new GridLayout(2, 1, 0, 4));
         left.setOpaque(false);
@@ -137,7 +144,7 @@ public class ArchivedGoalsPanel extends JPanel {
         String cost = CurrencyFormatter.format(goal.getFutureCost(), goal.getCurrencyCode());
         JLabel detailsLbl = new JLabel("Target: " + goal.getTargetYear() + "  |  Projected Cost: " + cost + "  |  Status: ARCHIVED");
         detailsLbl.setFont(AppTheme.FONT_BODY);
-        detailsLbl.setForeground(AppTheme.TEXT_MUTED);
+        detailsLbl.setForeground(AppTheme.getTextMuted());
 
         left.add(nameLbl);
         left.add(detailsLbl);
@@ -148,8 +155,11 @@ public class ArchivedGoalsPanel extends JPanel {
         JButton restoreBtn = AppTheme.createPrimaryButton("Restore to Active");
         restoreBtn.addActionListener(e -> handleRestore(goal));
 
-        JButton deleteBtn = AppTheme.createSecondaryButton("Delete Permanently");
-        deleteBtn.setForeground(AppTheme.RED_ERROR);
+        JButton deleteBtn = AppTheme.createDangerButton("Delete Permanently");
+        deleteBtn.setFont(AppTheme.FONT_SMALL_BOLD);
+        deleteBtn.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(AppTheme.getErrorColor(), 1, true),
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)));
         deleteBtn.addActionListener(e -> handleDeletePermanently(goal));
 
         right.add(restoreBtn);
@@ -192,13 +202,16 @@ public class ArchivedGoalsPanel extends JPanel {
     }
 
     private JPanel createEmptyState() {
-        JPanel p = new JPanel();
+        JPanel p = AppTheme.createCardPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-        AppTheme.applyCardStyle(p);
-        p.setMaximumSize(new Dimension(800, 160));
+        p.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, 160));
 
-        JLabel icon = new JLabel("📦");
-        icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
+        JLabel icon = new JLabel("SFP");
+        icon.setFont(AppTheme.FONT_SMALL_BOLD);
+        icon.setForeground(Color.WHITE);
+        icon.setOpaque(true);
+        icon.setBackground(AppTheme.getAccentColor());
+        icon.setBorder(new EmptyBorder(6, 8, 6, 8));
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel msg = new JLabel("No archived goals");
@@ -208,7 +221,7 @@ public class ArchivedGoalsPanel extends JPanel {
 
         JLabel sub = new JLabel("Goals you archive from your active dashboard will appear here safely.");
         sub.setFont(AppTheme.FONT_BODY);
-        sub.setForeground(AppTheme.TEXT_MUTED);
+        sub.setForeground(AppTheme.getTextMuted());
         sub.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         p.add(Box.createVerticalStrut(10));

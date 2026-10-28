@@ -62,12 +62,13 @@ public class GoalDetailPanel extends JPanel {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setOpaque(false);
-        container.setBorder(new EmptyBorder(24, 28, 24, 28));
+        container.setBorder(new EmptyBorder(AppTheme.PAGE_PADDING, AppTheme.PAGE_PADDING,
+                AppTheme.PAGE_PADDING, AppTheme.PAGE_PADDING));
 
         // Top Navigation Bar (Back and Export buttons)
         JPanel navRow = new JPanel(new BorderLayout());
         navRow.setOpaque(false);
-        navRow.setMaximumSize(new Dimension(850, 40));
+        navRow.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, 48));
 
         JButton backBtn = AppTheme.createSecondaryButton("← Back to Goals");
         backBtn.addActionListener(e -> mainFrame.navigateTo("SAVED_GOALS"));
@@ -75,7 +76,7 @@ public class GoalDetailPanel extends JPanel {
         JPanel actionBtns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actionBtns.setOpaque(false);
 
-        JButton exportBtn = AppTheme.createSecondaryButton("📄 Export Summary (.txt)");
+        JButton exportBtn = AppTheme.createSecondaryButton("Export Summary (.txt)");
         exportBtn.addActionListener(e -> handleExportSummary());
 
         JButton addContribBtn = AppTheme.createPrimaryButton("+ Log Contribution");
@@ -90,10 +91,10 @@ public class GoalDetailPanel extends JPanel {
         container.add(Box.createVerticalStrut(16));
 
         // Goal Overview Card
-        JPanel overviewCard = new JPanel();
+        JPanel overviewCard = AppTheme.createCardPanel();
         overviewCard.setLayout(new BoxLayout(overviewCard, BoxLayout.Y_AXIS));
-        overviewCard.setMaximumSize(new Dimension(850, 220));
-        AppTheme.applyCardStyle(overviewCard);
+        overviewCard.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, 220));
+        overviewCard.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel headerRow = new JPanel(new BorderLayout());
         headerRow.setOpaque(false);
@@ -102,20 +103,23 @@ public class GoalDetailPanel extends JPanel {
         titleLabel.setFont(AppTheme.FONT_TITLE);
         titleLabel.setForeground(AppTheme.getHeadingColor());
 
-        onTrackBadge = new JLabel(" ✓ ON TRACK ");
+        onTrackBadge = new JLabel(" ON TRACK ");
         onTrackBadge.setFont(AppTheme.FONT_SMALL_BOLD);
         onTrackBadge.setOpaque(true);
-        onTrackBadge.setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 10));
+        onTrackBadge.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(AppTheme.getSuccessColor(), 1, true),
+                BorderFactory.createEmptyBorder(4, 10, 4, 10)));
 
         headerRow.add(titleLabel, BorderLayout.WEST);
         headerRow.add(onTrackBadge, BorderLayout.EAST);
 
         subDetailsLabel = new JLabel("Target: 2027  •  Inflation: 6%  •  Term: SHORT");
         subDetailsLabel.setFont(AppTheme.FONT_BODY);
-        subDetailsLabel.setForeground(AppTheme.TEXT_MUTED);
+        subDetailsLabel.setForeground(AppTheme.getTextMuted());
 
         progressBar = new CustomProgressBar(0.0);
-        progressBar.setPreferredSize(new Dimension(800, 22));
+        progressBar.setPreferredSize(new Dimension(800, 10));
+        progressBar.setShowLabel(false);
 
         JPanel numbersRow = new JPanel(new BorderLayout());
         numbersRow.setOpaque(false);
@@ -133,7 +137,7 @@ public class GoalDetailPanel extends JPanel {
 
         JLabel noteLabel = new JLabel("Manual savings log — track your progress over time without any bank connection.");
         noteLabel.setFont(AppTheme.FONT_SMALL);
-        noteLabel.setForeground(AppTheme.TEXT_MUTED);
+        noteLabel.setForeground(AppTheme.getTextMuted());
 
         overviewCard.add(headerRow);
         overviewCard.add(Box.createVerticalStrut(4));
@@ -149,8 +153,10 @@ public class GoalDetailPanel extends JPanel {
         container.add(Box.createVerticalStrut(20));
 
         // Contribution History Section
-        JPanel historyCard = new JPanel(new BorderLayout(0, 10));
-        historyCard.setMaximumSize(new Dimension(850, 360));
+        JPanel historyCard = AppTheme.createCardPanel();
+        historyCard.setLayout(new BorderLayout(0, 10));
+        historyCard.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, 360));
+        historyCard.setAlignmentX(Component.CENTER_ALIGNMENT);
         AppTheme.applyCardStyle(historyCard);
 
         JPanel historyHeader = new JPanel(new BorderLayout());
@@ -179,6 +185,11 @@ public class GoalDetailPanel extends JPanel {
         historyTable.setFont(AppTheme.FONT_BODY);
         historyTable.getTableHeader().setFont(AppTheme.FONT_SMALL_BOLD);
         historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        historyTable.setForeground(AppTheme.getTextPrimary());
+        historyTable.setBackground(AppTheme.getCardBackground());
+        historyTable.setGridColor(AppTheme.getBorderColor());
+        historyTable.getTableHeader().setForeground(AppTheme.getTextMuted());
+        historyTable.getTableHeader().setBackground(AppTheme.getSurfaceBackground());
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -254,23 +265,30 @@ public class GoalDetailPanel extends JPanel {
 
         double percent = progressTracker.getProgressPercent(currentGoal, totalContributed);
         progressBar.setProgressPercent(percent);
+        progressBar.setFillColor(AppTheme.getAccentColor());
 
         boolean onTrack = progressTracker.isOnTrack(currentGoal, totalContributed);
         if ("COMPLETED".equalsIgnoreCase(currentGoal.getStatus()) || percent >= 100.0) {
-            onTrackBadge.setText(" ✓ COMPLETED ");
-            onTrackBadge.setBackground(AppTheme.GREEN_LIGHT);
-            onTrackBadge.setForeground(AppTheme.GREEN_ACCENT);
-            progressBar.setFillColor(AppTheme.GREEN_ACCENT);
+            onTrackBadge.setText(" COMPLETED ");
+            onTrackBadge.setBackground(AppTheme.getSuccessBackground());
+            onTrackBadge.setForeground(AppTheme.getSuccessColor());
+            onTrackBadge.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(AppTheme.getSuccessColor(), 1, true),
+                    BorderFactory.createEmptyBorder(4, 10, 4, 10)));
         } else if (onTrack) {
-            onTrackBadge.setText(" ✓ ON TRACK ");
-            onTrackBadge.setBackground(AppTheme.GREEN_LIGHT);
-            onTrackBadge.setForeground(AppTheme.GREEN_ACCENT);
-            progressBar.setFillColor(AppTheme.GREEN_ACCENT);
+            onTrackBadge.setText(" ON TRACK ");
+            onTrackBadge.setBackground(AppTheme.getSuccessBackground());
+            onTrackBadge.setForeground(AppTheme.getSuccessColor());
+            onTrackBadge.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(AppTheme.getSuccessColor(), 1, true),
+                    BorderFactory.createEmptyBorder(4, 10, 4, 10)));
         } else {
-            onTrackBadge.setText(" ⚠ BEHIND SCHEDULE ");
-            onTrackBadge.setBackground(AppTheme.AMBER_LIGHT);
-            onTrackBadge.setForeground(AppTheme.AMBER_WARNING);
-            progressBar.setFillColor(AppTheme.AMBER_WARNING);
+            onTrackBadge.setText(" BEHIND SCHEDULE ");
+            onTrackBadge.setBackground(AppTheme.getWarningBackground());
+            onTrackBadge.setForeground(AppTheme.getWarningColor());
+            onTrackBadge.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(AppTheme.getWarningColor(), 1, true),
+                    BorderFactory.createEmptyBorder(4, 10, 4, 10)));
         }
 
         String savedStr = CurrencyFormatter.format(totalContributed, curr);
@@ -308,9 +326,12 @@ public class GoalDetailPanel extends JPanel {
         JTextField amountField = new JTextField();
         JTextField dateField = new JTextField(DateUtil.todayIso());
         JTextField noteField = new JTextField();
+        AppTheme.styleInput(amountField);
+        AppTheme.styleInput(dateField);
+        AppTheme.styleInput(noteField);
         JLabel errorLbl = new JLabel(" ");
         errorLbl.setFont(AppTheme.FONT_SMALL);
-        errorLbl.setForeground(AppTheme.RED_ERROR);
+        errorLbl.setForeground(AppTheme.getErrorColor());
 
         panel.add(createDialogRow("Amount (" + currentGoal.getCurrencyCode() + "):", amountField));
         panel.add(Box.createVerticalStrut(10));

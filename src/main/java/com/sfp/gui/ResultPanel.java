@@ -44,28 +44,35 @@ public class ResultPanel extends JPanel {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setOpaque(false);
-        container.setBorder(new EmptyBorder(28, 28, 28, 28));
+        container.setBorder(new EmptyBorder(AppTheme.PAGE_PADDING, AppTheme.PAGE_PADDING,
+                AppTheme.PAGE_PADDING, AppTheme.PAGE_PADDING));
 
         // Center Card (Max width 640px)
-        JPanel card = new JPanel();
+        JPanel card = AppTheme.createCardPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setMaximumSize(new Dimension(640, Integer.MAX_VALUE));
-        AppTheme.applyCardStyle(card);
+        card.setMaximumSize(new Dimension(840, 560));
+        card.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Header
         itemNameHeader = new JLabel("Your Savings Projection");
         itemNameHeader.setFont(AppTheme.FONT_TITLE);
         itemNameHeader.setForeground(AppTheme.getHeadingColor());
-        itemNameHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
+        itemNameHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
+        itemNameHeader.setHorizontalAlignment(SwingConstants.LEFT);
+        itemNameHeader.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+                itemNameHeader.getPreferredSize().height));
 
         JLabel subHeader = new JLabel("Here is what you need to save to reach your purchase goal.");
         subHeader.setFont(AppTheme.FONT_BODY);
-        subHeader.setForeground(AppTheme.TEXT_MUTED);
-        subHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
+        subHeader.setForeground(AppTheme.getTextMuted());
+        subHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
+        subHeader.setHorizontalAlignment(SwingConstants.LEFT);
+        subHeader.setMaximumSize(new Dimension(Integer.MAX_VALUE, subHeader.getPreferredSize().height));
 
         // Hero Numbers Container
-        JPanel heroesPanel = new JPanel(new GridLayout(1, 2, 16, 0));
+        JPanel heroesPanel = new JPanel(new GridLayout(1, 2, AppTheme.SPACE_16, 0));
         heroesPanel.setOpaque(false);
+        heroesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel costBox = createHeroBox("ESTIMATED FUTURE COST", futureCostHero = new JLabel("₹0.00"));
         JPanel savingBox = createHeroBox("MONTHLY TARGET SAVING", monthlySavingHero = new JLabel("₹0.00"));
@@ -74,16 +81,16 @@ public class ResultPanel extends JPanel {
 
         yearlySavingDetail = new JLabel("Equivalent to ₹0.00 / year");
         yearlySavingDetail.setFont(AppTheme.FONT_SMALL);
-        yearlySavingDetail.setForeground(AppTheme.TEXT_MUTED);
-        yearlySavingDetail.setAlignmentX(Component.CENTER_ALIGNMENT);
+        yearlySavingDetail.setForeground(AppTheme.getTextMuted());
+        yearlySavingDetail.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         breakdownLabel = new JLabel("Based on X% inflation over N years.");
         breakdownLabel.setFont(AppTheme.FONT_BODY);
         breakdownLabel.setForeground(AppTheme.getTextPrimary());
-        breakdownLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        breakdownLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Feasibility Banner
-        feasibilityBanner = new JPanel(new BorderLayout());
+        feasibilityBanner = AppTheme.createRoundedPanel(new BorderLayout());
         feasibilityLabel = new JLabel("", SwingConstants.CENTER);
         feasibilityLabel.setFont(AppTheme.FONT_BODY_BOLD);
         feasibilityBanner.add(feasibilityLabel, BorderLayout.CENTER);
@@ -155,34 +162,34 @@ public class ResultPanel extends JPanel {
         ));
 
         if (isFeasible) {
-            feasibilityBanner.setBackground(AppTheme.GREEN_LIGHT);
+            feasibilityBanner.setBackground(AppTheme.getSuccessBackground());
             feasibilityBanner.setBorder(new CompoundBorder(
-                new LineBorder(AppTheme.GREEN_ACCENT, 1, true),
-                new EmptyBorder(12, 12, 12, 12)
+                new LineBorder(AppTheme.getSuccessColor(), 1, true),
+                new EmptyBorder(AppTheme.SPACE_12, AppTheme.SPACE_12, AppTheme.SPACE_12, AppTheme.SPACE_12)
             ));
             setFeasibilityMessage(String.format(
                     "Achievable: needs %.1f%% of your income, within your %.1f%% limit.",
-                    percentOfIncome, targetSavingsPercent), AppTheme.GREEN_ACCENT);
+                    percentOfIncome, targetSavingsPercent), AppTheme.getSuccessColor());
         } else if (percentOfIncome > 100.0) {
-            feasibilityBanner.setBackground(AppTheme.AMBER_LIGHT);
+            feasibilityBanner.setBackground(AppTheme.getWarningBackground());
             feasibilityBanner.setBorder(new CompoundBorder(
-                new LineBorder(AppTheme.AMBER_WARNING, 1, true),
-                new EmptyBorder(12, 12, 12, 12)
+                new LineBorder(AppTheme.getWarningColor(), 1, true),
+                new EmptyBorder(AppTheme.SPACE_12, AppTheme.SPACE_12, AppTheme.SPACE_12, AppTheme.SPACE_12)
             ));
             setFeasibilityMessage(
                     "This goal needs more than your whole monthly income. Extend the target year, "
                             + "lower the price, or increase your income.",
-                    AppTheme.AMBER_WARNING);
+                    AppTheme.getWarningColor());
         } else {
-            feasibilityBanner.setBackground(AppTheme.AMBER_LIGHT);
+            feasibilityBanner.setBackground(AppTheme.getWarningBackground());
             feasibilityBanner.setBorder(new CompoundBorder(
-                new LineBorder(AppTheme.AMBER_WARNING, 1, true),
-                new EmptyBorder(12, 12, 12, 12)
+                new LineBorder(AppTheme.getWarningColor(), 1, true),
+                new EmptyBorder(AppTheme.SPACE_12, AppTheme.SPACE_12, AppTheme.SPACE_12, AppTheme.SPACE_12)
             ));
             setFeasibilityMessage(String.format(
                     "Needs %.1f%% of your income, above your %.1f%% limit. "
                             + "Raise your savings rate to at least %.1f%%, or extend the target year.",
-                    percentOfIncome, targetSavingsPercent, percentOfIncome), AppTheme.AMBER_WARNING);
+                    percentOfIncome, targetSavingsPercent, percentOfIncome), AppTheme.getWarningColor());
         }
 
         saveButton.setText(isEditMode ? "Save Changes" : "Save This Goal");
@@ -223,13 +230,14 @@ public class ResultPanel extends JPanel {
      * Helper to render a hero metric box with navy title and large bold currency value.
      */
     private JPanel createHeroBox(String title, JLabel valueLabel) {
-        JPanel box = new JPanel();
+        JPanel box = AppTheme.createCardPanel();
         box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
-        AppTheme.applyCardStyle(box);
+        box.setPreferredSize(new Dimension(360, 140));
+        box.setMinimumSize(new Dimension(0, 140));
 
         JLabel titleLbl = new JLabel(title);
         titleLbl.setFont(AppTheme.FONT_SMALL_BOLD);
-        titleLbl.setForeground(AppTheme.TEXT_MUTED);
+        titleLbl.setForeground(AppTheme.getTextMuted());
         titleLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         valueLabel.setFont(AppTheme.FONT_HERO);

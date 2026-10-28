@@ -33,57 +33,64 @@ public class OnboardingPanel extends JPanel {
         setBackground(AppTheme.getSurfaceBackground());
 
         // Centered Card Container (Max width ~500px)
-        JPanel card = new JPanel();
+        JPanel card = AppTheme.createCardPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setPreferredSize(new Dimension(480, 490));
-        AppTheme.applyCardStyle(card);
+        card.setPreferredSize(new Dimension(500, 500));
 
         // Header
-        JLabel iconLabel = new JLabel("🎯");
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
-        iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel iconLabel = new JLabel("SFP");
+        iconLabel.setFont(AppTheme.FONT_SMALL_BOLD);
+        iconLabel.setForeground(Color.WHITE);
+        iconLabel.setOpaque(true);
+        iconLabel.setBackground(AppTheme.getAccentColor());
+        iconLabel.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+        iconLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel titleLabel = new JLabel("Welcome to Smart Finance");
         titleLabel.setFont(AppTheme.FONT_TITLE);
         titleLabel.setForeground(AppTheme.getHeadingColor());
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel subtitleLabel = new JLabel("Set up your financial profile to start planning goals.");
         subtitleLabel.setFont(AppTheme.FONT_BODY);
-        subtitleLabel.setForeground(AppTheme.TEXT_MUTED);
-        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        subtitleLabel.setForeground(AppTheme.getTextMuted());
+        subtitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Form Fields
         nameField = new JTextField();
         incomeField = new JTextField();
         savingsSpinner = new JSpinner(new SpinnerNumberModel(20.0, 1.0, 100.0, 1.0));
         currencyCombo = new JComboBox<>(Currency.values());
+        AppTheme.styleInput(nameField);
+        AppTheme.styleInput(incomeField);
+        AppTheme.styleInput(savingsSpinner);
+        AppTheme.styleInput(currencyCombo);
 
         errorLabel = new JLabel(" ");
         errorLabel.setFont(AppTheme.FONT_SMALL_BOLD);
-        errorLabel.setForeground(AppTheme.RED_ERROR);
-        errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        errorLabel.setForeground(AppTheme.getErrorColor());
+        errorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JButton startBtn = AppTheme.createPrimaryButton("Get Started →");
-        startBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        startBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
         startBtn.addActionListener(e -> handleGetStarted());
 
-        card.add(Box.createVerticalStrut(10));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_8));
         card.add(iconLabel);
-        card.add(Box.createVerticalStrut(10));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_8));
         card.add(titleLabel);
-        card.add(Box.createVerticalStrut(6));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_8));
         card.add(subtitleLabel);
-        card.add(Box.createVerticalStrut(20));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_24));
 
         card.add(createFieldRow("Your Name:", nameField));
-        card.add(Box.createVerticalStrut(12));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_12));
         card.add(createFieldRow("Monthly Income:", incomeField));
-        card.add(Box.createVerticalStrut(12));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_12));
         card.add(createFieldRow("Target Savings Rate (%):", savingsSpinner));
-        card.add(Box.createVerticalStrut(12));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_12));
         card.add(createFieldRow("Default Currency:", currencyCombo));
-        card.add(Box.createVerticalStrut(16));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_16));
 
         card.add(errorLabel);
         card.add(Box.createVerticalStrut(10));
@@ -98,10 +105,10 @@ public class OnboardingPanel extends JPanel {
     private JPanel createFieldRow(String labelText, JComponent inputComponent) {
         JPanel row = new JPanel(new BorderLayout(8, 4));
         row.setOpaque(false);
-        row.setMaximumSize(new Dimension(420, 56));
+        row.setMaximumSize(new Dimension(420, 64));
 
         JLabel label = new JLabel(labelText);
-        label.setFont(AppTheme.FONT_SMALL_BOLD);
+        label.setFont(AppTheme.FONT_BODY_BOLD);
         label.setForeground(AppTheme.getTextPrimary());
 
         row.add(label, BorderLayout.NORTH);

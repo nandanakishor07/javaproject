@@ -50,7 +50,8 @@ public class DashboardPanel extends JPanel {
         // Header and Greeting
         JPanel topContainer = new JPanel(new BorderLayout());
         topContainer.setOpaque(false);
-        topContainer.setBorder(new EmptyBorder(24, 28, 12, 28));
+        topContainer.setBorder(new EmptyBorder(AppTheme.SPACE_24, AppTheme.PAGE_PADDING,
+                AppTheme.SPACE_12, AppTheme.PAGE_PADDING));
 
         greetingLabel = new JLabel("Welcome back!");
         greetingLabel.setFont(AppTheme.FONT_TITLE);
@@ -65,7 +66,8 @@ public class DashboardPanel extends JPanel {
         // Stats Row
         JPanel statsRow = new JPanel(new GridLayout(1, 3, 16, 0));
         statsRow.setOpaque(false);
-        statsRow.setBorder(new EmptyBorder(0, 28, 16, 28));
+        statsRow.setBorder(new EmptyBorder(0, AppTheme.PAGE_PADDING, AppTheme.SPACE_16,
+                AppTheme.PAGE_PADDING));
 
         activeGoalsCard = new StatCard("ACTIVE GOALS", "0 Goals", "In progress");
         totalSavedCard = new StatCard("TOTAL SAVED", "₹0.00", "Across all active goals");
@@ -79,17 +81,20 @@ public class DashboardPanel extends JPanel {
         topWrapper.setOpaque(false);
         topWrapper.add(topContainer, BorderLayout.NORTH);
         topWrapper.add(statsRow, BorderLayout.SOUTH);
+        topWrapper.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, Integer.MAX_VALUE));
 
-        add(topWrapper, BorderLayout.NORTH);
+        add(AppTheme.centeredContent(topWrapper), BorderLayout.NORTH);
 
         // Content Area: Recent Goals
         JPanel contentPanel = new JPanel(new BorderLayout(0, 12));
         contentPanel.setOpaque(false);
-        contentPanel.setBorder(new EmptyBorder(0, 28, 24, 28));
+        contentPanel.setBorder(new EmptyBorder(0, AppTheme.PAGE_PADDING,
+                AppTheme.PAGE_PADDING, AppTheme.PAGE_PADDING));
+        contentPanel.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, Integer.MAX_VALUE));
 
         JLabel sectionTitle = new JLabel("Priority & Upcoming Goals");
         sectionTitle.setFont(AppTheme.FONT_SECTION);
-        sectionTitle.setForeground(AppTheme.TEXT_MUTED);
+        sectionTitle.setForeground(AppTheme.getTextMuted());
         contentPanel.add(sectionTitle, BorderLayout.NORTH);
 
         goalsListPanel = new JPanel();
@@ -103,7 +108,7 @@ public class DashboardPanel extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(12);
 
         contentPanel.add(scrollPane, BorderLayout.CENTER);
-        add(contentPanel, BorderLayout.CENTER);
+        add(AppTheme.centeredContent(contentPanel), BorderLayout.CENTER);
     }
 
     /**
@@ -115,7 +120,7 @@ public class DashboardPanel extends JPanel {
             return;
         }
 
-        greetingLabel.setText("Welcome back, " + user.getName() + " 👋");
+        greetingLabel.setText("Welcome back, " + user.getName());
 
         new SwingWorker<DashboardData, Void>() {
             @Override
@@ -231,13 +236,16 @@ public class DashboardPanel extends JPanel {
      * Friendly empty state card shown when no goals have been planned yet.
      */
     private JPanel createEmptyStatePanel() {
-        JPanel panel = new JPanel();
+        JPanel panel = AppTheme.createCardPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        AppTheme.applyCardStyle(panel);
-        panel.setMaximumSize(new Dimension(800, 200));
+        panel.setMaximumSize(new Dimension(AppTheme.CONTENT_MAX_WIDTH, 200));
 
-        JLabel icon = new JLabel("🚀");
-        icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 36));
+        JLabel icon = new JLabel("SFP");
+        icon.setFont(AppTheme.FONT_SMALL_BOLD);
+        icon.setForeground(Color.WHITE);
+        icon.setOpaque(true);
+        icon.setBackground(AppTheme.getAccentColor());
+        icon.setBorder(new EmptyBorder(8, 10, 8, 10));
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel msg = new JLabel("You haven't added any goals yet!");
@@ -247,7 +255,7 @@ public class DashboardPanel extends JPanel {
 
         JLabel sub = new JLabel("Plan your first purchase goal with inflation adjustment and smart saving targets.");
         sub.setFont(AppTheme.FONT_BODY);
-        sub.setForeground(AppTheme.TEXT_MUTED);
+        sub.setForeground(AppTheme.getTextMuted());
         sub.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton actionBtn = AppTheme.createPrimaryButton("+ Plan Your First Goal");

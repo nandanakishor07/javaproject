@@ -55,28 +55,34 @@ public class GoalFormPanel extends JPanel {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setOpaque(false);
-        container.setBorder(new EmptyBorder(24, 28, 24, 28));
+        container.setBorder(new EmptyBorder(AppTheme.PAGE_PADDING, AppTheme.PAGE_PADDING,
+                AppTheme.PAGE_PADDING, AppTheme.PAGE_PADDING));
 
         // Center card with max width 650px
-        JPanel card = new JPanel();
+        JPanel card = AppTheme.createCardPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setMaximumSize(new Dimension(660, 680));
-        AppTheme.applyCardStyle(card);
+        card.setMaximumSize(new Dimension(760, Integer.MAX_VALUE));
+        card.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         headerTitle = new JLabel("Plan a New Purchase Goal");
         headerTitle.setFont(AppTheme.FONT_TITLE);
         headerTitle.setForeground(AppTheme.getHeadingColor());
         headerTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        headerTitle.setHorizontalAlignment(SwingConstants.LEFT);
+        headerTitle.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+                headerTitle.getPreferredSize().height));
 
         JLabel subtitle = new JLabel("Enter your target item details to calculate inflation and savings targets.");
         subtitle.setFont(AppTheme.FONT_BODY);
-        subtitle.setForeground(AppTheme.TEXT_MUTED);
+        subtitle.setForeground(AppTheme.getTextMuted());
         subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        subtitle.setHorizontalAlignment(SwingConstants.LEFT);
+        subtitle.setMaximumSize(new Dimension(Integer.MAX_VALUE, subtitle.getPreferredSize().height));
 
         card.add(headerTitle);
         card.add(Box.createVerticalStrut(4));
         card.add(subtitle);
-        card.add(Box.createVerticalStrut(18));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_24));
 
         // Input components
         itemNameField = new JTextField();
@@ -84,6 +90,9 @@ public class GoalFormPanel extends JPanel {
                 "e.g. Car, Laptop, House down payment");
         priceField = new JTextField();
         currencyCombo = new JComboBox<>(Currency.values());
+        AppTheme.styleInput(itemNameField);
+        AppTheme.styleInput(priceField);
+        AppTheme.styleInput(currencyCombo);
 
         int curYear = DateUtil.currentYear();
         targetYearSpinner = new JSpinner(new SpinnerNumberModel(curYear + 1, curYear, curYear + 50, 1));
@@ -93,11 +102,12 @@ public class GoalFormPanel extends JPanel {
         configureSpinner(inflationSpinner, "#.#");
         termValueLabel = new JLabel();
         termValueLabel.setFont(AppTheme.FONT_SMALL);
-        termValueLabel.setForeground(AppTheme.getTextPrimary());
+        termValueLabel.setForeground(AppTheme.getAccentColor());
         targetYearSpinner.addChangeListener(e -> updateTermLabel());
         updateTermLabel();
 
         incomeField = new JTextField();
+        AppTheme.styleInput(incomeField);
         savingsSpinner = new JSpinner(new SpinnerNumberModel(
                 20.0, Validator.MIN_SAVINGS_PERCENT, Validator.MAX_SAVINGS_PERCENT, 0.5));
         configureSpinner(savingsSpinner, "#.#");
@@ -112,41 +122,48 @@ public class GoalFormPanel extends JPanel {
 
         // Add fields
         card.add(createFieldWithInlineError("Item / Purchase Name:", itemNameField, itemNameError));
-        card.add(Box.createVerticalStrut(10));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_12));
 
-        JPanel priceCurrRow = new JPanel(new GridLayout(1, 2, 12, 0));
+        JPanel priceCurrRow = new JPanel(new GridLayout(1, 2, AppTheme.SPACE_12, 0));
         priceCurrRow.setOpaque(false);
         priceCurrRow.add(createFieldWithInlineError("Current Price Today:", priceField, priceError));
         priceCurrRow.add(createSimpleField("Currency:", currencyCombo));
         card.add(priceCurrRow);
-        card.add(Box.createVerticalStrut(10));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_12));
 
-        JPanel yearInfRow = new JPanel(new GridLayout(1, 2, 12, 0));
+        JPanel yearInfRow = new JPanel(new GridLayout(1, 2, AppTheme.SPACE_12, 0));
         yearInfRow.setOpaque(false);
         yearInfRow.add(createFieldWithInlineError("Target Purchase Year:", targetYearSpinner, targetYearError));
         yearInfRow.add(createFieldWithInlineError("Annual Inflation Rate (%):", inflationSpinner, inflationError));
         card.add(yearInfRow);
-        card.add(Box.createVerticalStrut(10));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_12));
 
         // Goal term is derived from the target year.
-        JPanel termPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+        JPanel termPanel = new JPanel(new GridLayout(1, 2, AppTheme.SPACE_12, 0));
         termPanel.setOpaque(false);
-        termPanel.add(new JLabel("Goal Term:"));
-        termPanel.add(termValueLabel);
+        termPanel.add(createSimpleField("Goal Term:", termValueLabel));
+        JPanel termSpacer = new JPanel();
+        termSpacer.setOpaque(false);
+        termPanel.add(termSpacer);
         card.add(termPanel);
-        card.add(Box.createVerticalStrut(10));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_16));
 
         // Financial Context Row
-        JPanel financeRow = new JPanel(new GridLayout(1, 2, 12, 0));
+        JPanel financeRow = new JPanel(new GridLayout(1, 2, AppTheme.SPACE_12, 0));
         financeRow.setOpaque(false);
         financeRow.add(createFieldWithInlineError("Monthly Income:", incomeField, incomeError));
         financeRow.add(createFieldWithInlineError("Target Savings Rate (%):", savingsSpinner, savingsError));
         card.add(financeRow);
-        card.add(Box.createVerticalStrut(20));
+        card.add(Box.createVerticalStrut(AppTheme.SPACE_24));
 
         // Buttons
-        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        JPanel buttonRow = new JPanel(new GridLayout(1, 2, AppTheme.SPACE_12, 0));
         buttonRow.setOpaque(false);
+        JPanel buttonSpacer = new JPanel();
+        buttonSpacer.setOpaque(false);
+        buttonRow.add(buttonSpacer);
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, AppTheme.SPACE_8, 0));
+        actions.setOpaque(false);
 
         JButton cancelBtn = AppTheme.createSecondaryButton("Cancel");
         cancelBtn.addActionListener(e -> mainFrame.navigateTo("DASHBOARD"));
@@ -154,8 +171,9 @@ public class GoalFormPanel extends JPanel {
         JButton calcBtn = AppTheme.createPrimaryButton("Calculate Savings Plan →");
         calcBtn.addActionListener(e -> handleCalculate());
 
-        buttonRow.add(cancelBtn);
-        buttonRow.add(calcBtn);
+        actions.add(cancelBtn);
+        actions.add(calcBtn);
+        buttonRow.add(actions);
         card.add(buttonRow);
 
         JScrollPane scrollPane = new JScrollPane(card);
@@ -164,7 +182,8 @@ public class GoalFormPanel extends JPanel {
         scrollPane.getViewport().setOpaque(false);
         scrollPane.getVerticalScrollBar().setUnitIncrement(12);
 
-        container.add(card);
+        scrollPane.setViewportView(AppTheme.centeredContent(card));
+        container.add(scrollPane);
         add(container, BorderLayout.CENTER);
     }
 
@@ -321,13 +340,14 @@ public class GoalFormPanel extends JPanel {
     private JLabel createErrorLabel() {
         JLabel lbl = new JLabel(" ");
         lbl.setFont(AppTheme.FONT_SMALL);
-        lbl.setForeground(AppTheme.RED_ERROR);
+        lbl.setForeground(AppTheme.getErrorColor());
         return lbl;
     }
 
     private void configureSpinner(JSpinner spinner, String numberPattern) {
         JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner, numberPattern);
         spinner.setEditor(editor);
+        AppTheme.styleInput(spinner);
         spinner.setEnabled(true);
         editor.setEnabled(true);
         editor.getTextField().setEnabled(true);
@@ -347,9 +367,12 @@ public class GoalFormPanel extends JPanel {
         panel.setOpaque(false);
 
         JLabel label = new JLabel(labelText);
-        label.setFont(AppTheme.FONT_SMALL_BOLD);
+        label.setFont(AppTheme.FONT_BODY_BOLD);
         label.setForeground(AppTheme.getTextPrimary());
 
+        errorLabel.addPropertyChangeListener("text", event ->
+                AppTheme.setInputError(input, !errorLabel.getText().trim().isEmpty()));
+        AppTheme.setInputError(input, false);
         panel.add(label, BorderLayout.NORTH);
         panel.add(input, BorderLayout.CENTER);
         panel.add(errorLabel, BorderLayout.SOUTH);
@@ -361,7 +384,7 @@ public class GoalFormPanel extends JPanel {
         panel.setOpaque(false);
 
         JLabel label = new JLabel(labelText);
-        label.setFont(AppTheme.FONT_SMALL_BOLD);
+        label.setFont(AppTheme.FONT_BODY_BOLD);
         label.setForeground(AppTheme.getTextPrimary());
 
         panel.add(label, BorderLayout.NORTH);

@@ -10,8 +10,7 @@ import java.awt.*;
  */
 public class CustomProgressBar extends JComponent {
     private double progressPercent; // 0 to 100+
-    private Color fillColor = AppTheme.GREEN_ACCENT;
-    private Color trackColor = new Color(229, 231, 235);
+    private Color fillColor;
     private boolean showLabel = true;
 
     /**
@@ -26,8 +25,9 @@ public class CustomProgressBar extends JComponent {
      */
     public CustomProgressBar(double progressPercent) {
         this.progressPercent = Math.max(0.0, progressPercent);
-        setPreferredSize(new Dimension(200, 20));
-        setMinimumSize(new Dimension(100, 16));
+        setPreferredSize(new Dimension(200, 10));
+        setMinimumSize(new Dimension(60, 10));
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, 10));
     }
 
     /**
@@ -68,20 +68,20 @@ public class CustomProgressBar extends JComponent {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int width = getWidth();
-        int height = getHeight();
-        int arc = height; // pill shape
+        int height = 10;
+        int y = Math.max(0, (getHeight() - height) / 2);
+        int arc = height;
 
         // Background track
-        Color track = AppTheme.isDarkMode() ? new Color(44, 49, 64) : trackColor;
-        g2.setColor(track);
-        g2.fillRoundRect(0, 0, width, height, arc, arc);
+        g2.setColor(AppTheme.getBorderColor());
+        g2.fillRoundRect(0, y, width, height, arc, arc);
 
         // Filled progress
         double clampedPercent = Math.min(100.0, progressPercent);
         int fillWidth = (int) Math.round((clampedPercent / 100.0) * width);
         if (fillWidth > 0) {
-            g2.setColor(fillColor);
-            g2.fillRoundRect(0, 0, fillWidth, height, arc, arc);
+            g2.setColor(fillColor != null ? fillColor : AppTheme.getAccentColor());
+            g2.fillRoundRect(0, y, fillWidth, height, arc, arc);
         }
 
         // Percentage text
@@ -97,7 +97,7 @@ public class CustomProgressBar extends JComponent {
 
             // Subtle contrast text color
             g2.setColor(AppTheme.getTextPrimary());
-            g2.drawString(text, textX, textY);
+            g2.drawString(text, textX, Math.max(fm.getAscent(), textY));
         }
 
         g2.dispose();
